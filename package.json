@@ -13,11 +13,18 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.3",
     "@mui/material": "^5.14.4",
-    "eslint": "8.46.0",
+    "@supabase/supabase-js": "^2.32.0",
+    "axios": "^1.4.0",
     "eslint-config-next": "13.4.13",
+    "langchain": "^0.0.125",
     "next": "13.4.13",
+    "pdf-parse": "^1.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-dropzone": "^14.2.3"
+    "react-dropzone": "^14.2.3",
+    "react-window": "^1.8.9"
+  },
+  "devDependencies": {
+    "eslint": "^8.46.0"
   }
 }
