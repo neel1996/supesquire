@@ -12,10 +12,12 @@ export default function Home() {
 
   return (
     <Grid container xs={12}>
-      <Grid xs>
+      <Grid item xs>
         <History />
       </Grid>
-      <Grid xs={9}>{activeChatId ? <ChatContainer /> : <Hero />}</Grid>
+      <Grid item xs={10}>
+        {activeChatId ? <ChatContainer /> : <Hero />}
+      </Grid>
     </Grid>
   );
 }
