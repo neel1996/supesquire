@@ -5,9 +5,12 @@ import { ChatContext } from './Context';
 
 export default function ChatProvider({ children }) {
   const [activeChatId, setActiveChatId] = useState(null);
+  const [socket, setSocket] = useState(null);
 
   return (
-    <ChatContext.Provider value={{ activeChatId, setActiveChatId }}>
+    <ChatContext.Provider
+      value={{ activeChatId, setActiveChatId, socket, setSocket }}
+    >
       {children}
     </ChatContext.Provider>
   );

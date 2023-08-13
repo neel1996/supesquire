@@ -1,7 +1,8 @@
-"use client"
+'use client';
 
-import { createContext } from "react";
+import { createContext } from 'react';
 
 export const ChatContext = createContext({
-    activeChat: null,
+  activeChat: null,
+  socket: null
 });

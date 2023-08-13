@@ -1,8 +1,15 @@
 import { Face6, SmartToy } from '@mui/icons-material';
 import { Card, Grid, Icon, ListItem } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
-export default function ChatItem({ key, style, conversation }) {
+export default function ChatItem({
+  rowPosition,
+  style,
+  conversation,
+  listRef,
+  rowRef,
+  rowHeights
+}) {
   let styles = {
     background: '#e3fde9',
     color: '#404667',
@@ -22,9 +29,14 @@ export default function ChatItem({ key, style, conversation }) {
     };
   }
 
+  useEffect(() => {
+    rowHeights.current[rowPosition] = rowRef.current.clientHeight;
+    listRef.current.resetAfterIndex(0);
+  }, [rowRef]);
+
   return (
     <ListItem
-      key={key}
+      key={rowPosition}
       sx={{
         display: 'flex',
         justifyContent: styles.justifyContent,
@@ -35,7 +47,8 @@ export default function ChatItem({ key, style, conversation }) {
         sx={{
           alignItems: 'center',
           alignContent: 'center',
-          display: 'flex'
+          display: 'flex',
+          width: 'fit-content'
         }}
       >
         <Grid item>
@@ -50,6 +63,7 @@ export default function ChatItem({ key, style, conversation }) {
         <Grid>
           <Card
             elevation={5}
+            ref={rowRef}
             sx={{
               width: 'fit-content',
               padding: '10px',

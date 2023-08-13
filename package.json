@@ -23,7 +23,9 @@
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "react-loader-spinner": "^5.3.4",
-    "react-window": "^1.8.9"
+    "react-window": "^1.8.9",
+    "socket.io": "^4.7.2",
+    "socket.io-client": "^4.7.2"
   },
   "devDependencies": {
     "encoding": "^0.1.13",
