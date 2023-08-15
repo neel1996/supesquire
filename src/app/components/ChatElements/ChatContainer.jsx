@@ -5,6 +5,8 @@ import ChatItem from './ChatItem';
 import ChatInput from './ChatInput';
 import { VariableSizeList as List } from 'react-window';
 import { ChatContext } from '@/app/context/Context';
+import { toast } from 'react-toastify';
+import { Comment } from 'react-loader-spinner';
 
 export default function ChatMessage() {
   const { activeChatId, socket } = useContext(ChatContext);
@@ -23,17 +25,68 @@ export default function ChatMessage() {
   }, [conversations]);
 
   useEffect(() => {
-    socket?.on('ai_message', async (data) => {
-      console.info({ data });
+    setConversations([]);
 
+    const chatRecords = async () => {
+      await fetch(`/api/chat-records`, {
+        method: 'POST',
+        body: JSON.stringify({
+          checksum: activeChatId
+        })
+      })
+        .then(async (res) => {
+          const data = await res.json();
+          setConversations((prev) => {
+            return [
+              ...prev,
+              ...data.map((item) => {
+                return {
+                  user: item.actor,
+                  message: item.message
+                };
+              })
+            ];
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error('Cannot fetch chat records. Please try again later.', {
+            toastId: 'chat_error'
+          });
+        });
+    };
+
+    chatRecords();
+  }, [activeChatId]);
+
+  useEffect(() => {
+    socket?.on('ai_message', async (data) => {
       setConversations((prev) => {
+        let temp = [...prev];
+        temp.pop();
+
         return [
-          ...prev,
+          ...temp,
           {
             user: 'ai',
             message: JSON.parse(data).message
           }
         ];
+      });
+    });
+
+    socket?.on('chat_error', async (data) => {
+      console.error({ data });
+
+      setConversations((prev) => {
+        let temp = [...prev];
+        temp.pop();
+
+        return [...temp];
+      });
+
+      toast.error('Cannot send message. Please try again later.', {
+        toastId: 'chat_error'
       });
     });
   }, [socket]);
@@ -110,24 +163,32 @@ export default function ChatMessage() {
         onSubmit={(e) => {
           e.preventDefault();
 
-          if (socket) {
-            socket.emit(
-              'message',
-              JSON.stringify({
-                documentId: activeChatId,
-                message: userMessage
-              })
-            );
-          }
+          socket?.emit(
+            'message',
+            JSON.stringify({
+              documentId: activeChatId,
+              message: userMessage
+            })
+          );
 
           setUserMessage('');
-
           setConversations((prev) => {
             return [
               ...prev,
               {
                 user: 'human',
                 message: userMessage
+              },
+              {
+                user: 'ai',
+                message: (
+                  <Comment
+                    color="#ffffff"
+                    height={50}
+                    width={50}
+                    backgroundColor="#3f6fb5"
+                  />
+                )
               }
             ];
           });

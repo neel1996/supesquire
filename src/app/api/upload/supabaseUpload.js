@@ -19,5 +19,6 @@ export const upload = async (supabase, file) => {
     console.error(error);
     throw error;
   }
-  return data;
+
+  return { ...data, checksum };
 };

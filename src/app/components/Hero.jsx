@@ -9,6 +9,7 @@ import { ChatContext } from '../context/Context';
 import FeatureCards from './FeatureCards';
 import UploadInput from './UploadInput';
 import Loader from './Loader';
+import { toast } from 'react-toastify';
 
 export default function Hero() {
   const { setActiveChatId } = useContext(ChatContext);
@@ -32,6 +33,12 @@ export default function Hero() {
         .catch((error) => {
           setLoading(false);
           console.log(error);
+
+          toast.error('Error uploading file', {
+            position: 'bottom-left',
+            autoClose: 3000,
+            toastId: 'upload_error'
+          });
         });
     },
     [setActiveChatId, setLoading]

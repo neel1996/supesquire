@@ -1,14 +1,11 @@
 import { upload } from '@/app/api/upload/supabaseUpload';
 import { NextResponse } from 'next/server';
 import { extractDocumentContent } from './documentHandler';
-import { createClient } from '@supabase/supabase-js';
+import { loadQAChain } from 'langchain/chains';
+import { Document } from 'langchain/document';
 // import { embeddings } from './generateEmbeddings';
 
-const apiURL = process.env.SUPABASE_URL;
-const apiKey = process.env.SUPABASE_API_KEY;
-const supabase = createClient(apiURL, apiKey);
-
-globalThis.supabase = supabase;
+const supabase = globalThis.supabase;
 
 export const POST = async (req) => {
   const form = await req.formData();
@@ -27,7 +24,7 @@ export const POST = async (req) => {
         .select('checksum', {
           count: 'exact'
         })
-        .eq('checksum', res.path);
+        .eq('checksum', res.checksum);
 
       if (error) {
         console.error(error);
@@ -36,7 +33,7 @@ export const POST = async (req) => {
 
       const newDocumentPayload = {
         fileName: file.name,
-        checksum: res.path,
+        checksum: res.checksum,
         docContent
       };
 
@@ -44,9 +41,7 @@ export const POST = async (req) => {
         return NextResponse.json({ status: 200, ...documentData?.[0] });
       }
 
-      await insertNewDocument(newDocumentPayload);
-
-      return NextResponse.json({ status: 200, checksum: res.path });
+      return await insertNewDocument(newDocumentPayload);
     })
     .catch((error) => {
       console.error(error);
@@ -56,15 +51,27 @@ export const POST = async (req) => {
 
 const insertNewDocument = async ({ fileName, checksum, docContent }) => {
   // const embedding = await embeddings(docContent);
-  const embedding = [];
+
+  const title = await documentTitle(docContent);
+  const sanitizedTitle = title?.replace(/[^\x00-\x7F]\\u0000/g, '');
+  const sanitizedContent = docContent?.replace(/[^\x00-\x7F]\\u0000/g, '');
+
+  console.log({
+    checksum: checksum,
+    document_name: fileName,
+    content: sanitizedContent,
+    embedding: null,
+    title: sanitizedTitle
+  });
 
   const { error } = await supabase
     .from(process.env.SUPABASE_DOCUMENTS_TABLE)
     .insert({
       checksum: checksum,
       document_name: fileName,
-      content: docContent,
-      embedding: null
+      content: sanitizedContent,
+      embedding: null,
+      title: sanitizedTitle
     });
 
   if (error) {
@@ -77,8 +84,32 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
     [checksum]: {
       checksum,
       document_name: fileName,
-      content: docContent,
-      embedding: embedding
+      content: sanitizedContent,
+      embedding: null,
+      title: sanitizedTitle
     }
   };
+
+  return NextResponse.json({ status: 200, checksum });
+};
+
+const documentTitle = async (content) => {
+  const llm = globalThis.llm;
+
+  const chain = loadQAChain(llm, {
+    type: 'stuff',
+    verbose: true
+  });
+
+  const { text } = await chain.call({
+    input_documents: [
+      new Document({
+        pageContent: content
+      })
+    ],
+    question:
+      'What is the title of this document? Respond only the title and nothing else'
+  });
+
+  return text;
 };

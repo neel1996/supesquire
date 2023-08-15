@@ -1,66 +1,152 @@
-import { HistoryEdu, HistoryOutlined } from "@mui/icons-material";
+import {
+  AddBox,
+  AddCircle,
+  AddCircleOutline,
+  HistoryEdu,
+  HistoryOutlined
+} from '@mui/icons-material';
 import {
   Box,
-  Container,
+  Grid,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Skeleton,
   Stack,
-  Typography,
-} from "@mui/material";
+  Tooltip,
+  Typography
+} from '@mui/material';
+import { useContext, useEffect } from 'react';
+import { ChatContext } from '../context/Context';
 
 export default function History() {
+  const { conversationHistory, activeChatId, setActiveChatId } =
+    useContext(ChatContext);
+
+  const FallbackSkeleton = () => {
+    return (
+      <Grid
+        container
+        sx={{
+          padding: '15px',
+          background: '#95a0dd',
+          borderRadius: '1px',
+          alignItems: 'center'
+        }}
+      >
+        <Grid item xs={2}>
+          <Skeleton
+            variant="circular"
+            width={40}
+            height={40}
+            animation="pulse"
+          />
+        </Grid>
+        <Grid item xs={10}>
+          <Skeleton variant="text" width={200} height={20} />
+          <Skeleton variant="text" width={100} height={10} />
+        </Grid>
+      </Grid>
+    );
+  };
+
   return (
     <Box
       sx={{
-        backgroundColor: "#3f51b5",
-        height: "100vh",
-        boxShadow: "0px 0px 12px 0px rgb(63,81,181,0.17)",
+        backgroundColor: '#3f51b5',
+        height: '100vh',
+        boxShadow: '0px 0px 12px 0px rgb(63,81,181,0.17)'
       }}
     >
-      <Stack
-        sx={{
-          color: "#edf0ff",
-          flexDirection: "row",
-          alignItems: "center",
-          padding: "10px 20px",
-          fontSize: "24px",
-        }}
-      >
-        <HistoryOutlined />
-        <Typography
-          variant="caption"
-          sx={{
-            textAlign: "left",
-            padding: "20px 10px",
-            fontSize: "24px",
-            fontWeight: 500,
-          }}
-        >
-          Chat History
-        </Typography>
-      </Stack>
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton
+      <Grid container alignItems="center" justifyContent="space-between">
+        <Grid item xs={9}>
+          <Stack
             sx={{
-              padding: "15px 10px",
-              background: "#95a0dd",
-              borderRadius: "1px",
-              fontSize: "18px",
-              "&:hover": {
-                background: "#7f8cd4",
-              },
+              color: '#edf0ff',
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: '10px 20px',
+              fontSize: '24px'
             }}
           >
-            <ListItemIcon>
-              <HistoryEdu />
-            </ListItemIcon>
-            <ListItemText primary="Untitled" />
-          </ListItemButton>
-        </ListItem>
+            <HistoryOutlined />
+            <Typography
+              variant="caption"
+              sx={{
+                textAlign: 'left',
+                padding: '20px 10px',
+                fontSize: '20px',
+                fontWeight: 500
+              }}
+            >
+              Chat History
+            </Typography>
+          </Stack>
+        </Grid>
+        <Grid item xs>
+          <IconButton
+            sx={{
+              color: '#94a4ff'
+            }}
+            onClick={() => {
+              setActiveChatId(null);
+            }}
+          >
+            <AddBox
+              sx={{
+                fontSize: '36px'
+              }}
+            />
+          </IconButton>
+        </Grid>
+      </Grid>
+      <List>
+        {conversationHistory === null ? (
+          <FallbackSkeleton />
+        ) : (
+          conversationHistory.map((conversation) => (
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{
+                  padding: '15px 10px',
+                  background:
+                    conversation.checksum === activeChatId
+                      ? '#7f8cd4'
+                      : '#95a0dd',
+                  borderRadius: '1px',
+                  fontSize: '12px',
+                  '&:hover': {
+                    background: '#7f8cd4'
+                  }
+                }}
+                onClick={() => {
+                  setActiveChatId(conversation.checksum);
+                }}
+              >
+                <ListItemIcon>
+                  <HistoryEdu />
+                </ListItemIcon>
+                <ListItemText>
+                  <Tooltip title={conversation.title} placement="right-end">
+                    <Typography
+                      sx={{
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        width: '90%'
+                      }}
+                    >
+                      {conversation.title}
+                    </Typography>
+                  </Tooltip>
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+          ))
+        )}
       </List>
     </Box>
   );

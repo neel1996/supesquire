@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import { inference } from './inference';
+import { save } from './saveChatRecords';
 
 export default function handler(req, res) {
   const io = new Server(res.socket.server, {
@@ -13,19 +14,44 @@ export default function handler(req, res) {
     socket.on('message', async (data) => {
       const parsed = JSON.parse(data);
 
-      const res = await fetch(`${process.env.ORIGIN}/api/document`, {
+      await save({
+        checksum: parsed.documentId,
+        message: parsed.message,
+        actor: 'human'
+      }).catch((err) => {
+        console.error(err);
+        socket.emit('chat_error', JSON.stringify({ message: err }));
+      });
+
+      const documentData = await fetch(`${process.env.ORIGIN}/api/document`, {
         method: 'POST',
         body: JSON.stringify({
           documentId: parsed.documentId,
           message: parsed.message
         })
-      });
+      })
+        .then((res) => res.json())
+        .catch((err) => {
+          console.error(err);
+          socket.emit('chat_error', JSON.stringify({ message: err }));
+        });
 
-      const documentData = await res.json();
-
-      inference({ documentData, question: parsed.message }).then((answer) => {
-        socket.emit('ai_message', JSON.stringify({ message: answer }));
-      });
+      inference({ documentData, question: parsed.message }).then(
+        async (answer) => {
+          await save({
+            checksum: parsed.documentId,
+            message: answer,
+            actor: 'ai'
+          })
+            .then(() => {
+              socket.emit('ai_message', JSON.stringify({ message: answer }));
+            })
+            .catch((err) => {
+              console.error(err);
+              socket.emit('chat_error', JSON.stringify({ message: err }));
+            });
+        }
+      );
     });
   });
 

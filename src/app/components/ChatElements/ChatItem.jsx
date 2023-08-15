@@ -32,11 +32,6 @@ export default function ChatItem({
   useEffect(() => {
     rowHeights.current[rowPosition] = rowRef.current.clientHeight;
     listRef.current.resetAfterIndex(0);
-
-    console.info(
-      rowRef.current.clientWidth,
-      rowRef.current.parentNode.clientWidth
-    );
   }, [rowRef]);
 
   return (
@@ -70,7 +65,7 @@ export default function ChatItem({
             elevation={5}
             ref={rowRef}
             sx={{
-              width: 'fit-content',
+              width: conversation.user === 'ai' ? '70%' : 'fit-content',
               padding: '10px',
               background: styles.background,
               color: styles.color,
