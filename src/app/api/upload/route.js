@@ -34,7 +34,7 @@ export const POST = async (req) => {
       const newDocumentPayload = {
         fileName: file.name,
         checksum: res.checksum,
-        docContent
+        docContent: docContent?.replace(/[^\x00-\x7F]/g, '')
       };
 
       if (count) {
@@ -53,25 +53,15 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
   // const embedding = await embeddings(docContent);
 
   const title = await documentTitle(docContent);
-  const sanitizedTitle = title?.replace(/[^\x00-\x7F]\\u0000/g, '');
-  const sanitizedContent = docContent?.replace(/[^\x00-\x7F]\\u0000/g, '');
-
-  console.log({
-    checksum: checksum,
-    document_name: fileName,
-    content: sanitizedContent,
-    embedding: null,
-    title: sanitizedTitle
-  });
 
   const { error } = await supabase
     .from(process.env.SUPABASE_DOCUMENTS_TABLE)
     .insert({
       checksum: checksum,
       document_name: fileName,
-      content: sanitizedContent,
+      content: docContent,
       embedding: null,
-      title: sanitizedTitle
+      title: title
     });
 
   if (error) {
@@ -84,13 +74,13 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
     [checksum]: {
       checksum,
       document_name: fileName,
-      content: sanitizedContent,
+      content: docContent,
       embedding: null,
-      title: sanitizedTitle
+      title: title
     }
   };
 
-  return NextResponse.json({ status: 200, checksum });
+  return NextResponse.json({ status: 200, checksum, title, fileName });
 };
 
 const documentTitle = async (content) => {

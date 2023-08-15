@@ -23,8 +23,12 @@ import { useContext, useEffect } from 'react';
 import { ChatContext } from '../context/Context';
 
 export default function History() {
-  const { conversationHistory, activeChatId, setActiveChatId } =
-    useContext(ChatContext);
+  const {
+    conversationHistory,
+    activeChatId,
+    setActiveChatId,
+    setCurrentDocument
+  } = useContext(ChatContext);
 
   const FallbackSkeleton = () => {
     return (
@@ -56,19 +60,25 @@ export default function History() {
   return (
     <Box
       sx={{
-        backgroundColor: '#3f51b5',
+        backgroundColor: '#1e1f22',
         height: '100vh',
         boxShadow: '0px 0px 12px 0px rgb(63,81,181,0.17)'
       }}
     >
-      <Grid container alignItems="center" justifyContent="space-between">
+      <Grid
+        container
+        textAlign="center"
+        alignItems="center"
+        justifyContent="space-between"
+        padding="10px 0px"
+      >
         <Grid item xs={9}>
           <Stack
             sx={{
               color: '#edf0ff',
               flexDirection: 'row',
               alignItems: 'center',
-              padding: '10px 20px',
+              padding: '5px 20px',
               fontSize: '24px'
             }}
           >
@@ -77,7 +87,7 @@ export default function History() {
               variant="caption"
               sx={{
                 textAlign: 'left',
-                padding: '20px 10px',
+                padding: '10px',
                 fontSize: '20px',
                 fontWeight: 500
               }}
@@ -103,19 +113,24 @@ export default function History() {
           </IconButton>
         </Grid>
       </Grid>
-      <List>
+      <List
+        sx={{
+          padding: '0px'
+        }}
+      >
         {conversationHistory === null ? (
           <FallbackSkeleton />
         ) : (
           conversationHistory.map((conversation) => (
-            <ListItem disablePadding>
+            <ListItem disablePadding key={conversation.id}>
               <ListItemButton
                 sx={{
                   padding: '15px 10px',
                   background:
                     conversation.checksum === activeChatId
                       ? '#7f8cd4'
-                      : '#95a0dd',
+                      : '#313338',
+                  color: '#ffffff',
                   borderRadius: '1px',
                   fontSize: '12px',
                   '&:hover': {
@@ -123,11 +138,20 @@ export default function History() {
                   }
                 }}
                 onClick={() => {
+                  setCurrentDocument({
+                    title: conversation.title,
+                    id: conversation.checksum,
+                    fileName: conversation.document_name
+                  });
                   setActiveChatId(conversation.checksum);
                 }}
               >
                 <ListItemIcon>
-                  <HistoryEdu />
+                  <HistoryEdu
+                    sx={{
+                      color: '#ffffff'
+                    }}
+                  />
                 </ListItemIcon>
                 <ListItemText>
                   <Tooltip title={conversation.title} placement="right-end">

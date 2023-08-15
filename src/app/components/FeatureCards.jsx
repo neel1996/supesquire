@@ -22,9 +22,9 @@ export default function FeatureCards() {
         <Box
           key={index}
           sx={{
-            backgroundColor: '#f5f5f5',
+            backgroundColor: '#3b3d4d',
             padding: '20px',
-            boxShadow: '0px 0px 12px 0px rgb(63,81,181,0.17)',
+            boxShadow: '0px -1px 11px 0px rgb(148 ,164, 255, 0.19)',
             borderRadius: '10px',
             width: '350px',
             minWidth: '300px',
@@ -36,7 +36,7 @@ export default function FeatureCards() {
               component={feature.icon}
               sx={{
                 fontSize: '60px',
-                color: '#3f51b5'
+                color: '#94a4ff'
               }}
             />
           )}
@@ -46,7 +46,7 @@ export default function FeatureCards() {
               width: '80%',
               marginLeft: 'auto',
               marginRight: 'auto',
-              color: '#7f7f7f',
+              color: '#94a4ff',
               textAlign: 'left',
               fontSize: '18px'
             }}

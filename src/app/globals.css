@@ -11,8 +11,28 @@ body {
   background-repeat: no-repeat;
   background-origin: content-box;
   background-size: 100% 130%;
+  background-color: #313338;
+  background-position: center;
 }
 
 .MuiOutlinedInput-notchedOutline {
   border: none !important;
+}
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #313338;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4c4c4c;
+  border-radius: 1em;
+}
+
+::selection {
+  background: #4c4c4c;
+  color: #fff;
 }

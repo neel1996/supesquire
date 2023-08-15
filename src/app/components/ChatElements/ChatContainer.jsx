@@ -1,4 +1,4 @@
-import { Grid, Typography } from '@mui/material';
+import { Card, Grid, Icon, IconButton, Stack, Typography } from '@mui/material';
 import Image from 'next/image';
 import { useContext, useEffect, useRef, useState } from 'react';
 import ChatItem from './ChatItem';
@@ -7,9 +7,10 @@ import { VariableSizeList as List } from 'react-window';
 import { ChatContext } from '@/app/context/Context';
 import { toast } from 'react-toastify';
 import { Comment } from 'react-loader-spinner';
+import ChatHeader from './ChatHeader';
 
 export default function ChatMessage() {
-  const { activeChatId, socket } = useContext(ChatContext);
+  const { activeChatId, socket, currentDocument } = useContext(ChatContext);
 
   const [conversations, setConversations] = useState([]);
   const [userMessage, setUserMessage] = useState('');
@@ -97,6 +98,7 @@ export default function ChatMessage() {
 
   return (
     <Grid container flexDirection="column" height="100%">
+      {conversations && conversations.length > 0 && <ChatHeader />}
       <Grid
         xs
         item
@@ -113,14 +115,25 @@ export default function ChatMessage() {
       >
         {conversations.length === 0 ? (
           <>
-            <Image
-              src="/logo.png"
-              alt="Logo"
-              width={150}
-              height={150}
-              draggable={false}
-            />
-            <Typography sx={{ color: '#7f7f7f', padding: '10px 0px' }}>
+            <Card
+              elevation={10}
+              sx={{
+                width: 'fit-content',
+                padding: '20px',
+                background: '#ecefff',
+                borderRadius: '20px',
+                margin: '0px auto'
+              }}
+            >
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={150}
+                height={150}
+                draggable={false}
+              />
+            </Card>
+            <Typography sx={{ color: '#eeeeee', padding: '20px 0px' }}>
               Your document has been processed! Quiz away!
             </Typography>
           </>
@@ -155,7 +168,6 @@ export default function ChatMessage() {
           </List>
         )}
       </Grid>
-
       <form
         style={{
           marginBottom: '60px'
@@ -186,7 +198,7 @@ export default function ChatMessage() {
                     color="#ffffff"
                     height={50}
                     width={50}
-                    backgroundColor="#3f6fb5"
+                    backgroundColor="#1f232d"
                   />
                 )
               }

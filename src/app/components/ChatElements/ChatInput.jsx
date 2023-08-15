@@ -1,5 +1,5 @@
-import { Send } from '@mui/icons-material';
-import { Grid, IconButton, TextField } from '@mui/material';
+import { KeyboardArrowRight, Send } from '@mui/icons-material';
+import { Grid, Icon, IconButton, TextField } from '@mui/material';
 import React from 'react';
 
 export default function ChatInput({ userMessage, setUserMessage }) {
@@ -12,13 +12,33 @@ export default function ChatInput({ userMessage, setUserMessage }) {
         alignItems: 'center',
         marginLeft: 'auto',
         marginRight: 'auto',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#313338',
         borderRadius: '10px',
-        boxShadow: '0px 0px 10px 5px rgb(63,81,181,0.17)',
+        boxShadow: '1px 3px 9px 6px rgb(44, 46, 57, 0.62)',
         height: '100%'
       }}
     >
-      <Grid xs={11}>
+      <Grid
+        xs={11}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          flexDirection: 'row'
+        }}
+      >
+        <IconButton
+          size="large"
+          sx={{
+            color: '#86878a',
+            padding: '0px'
+          }}
+        >
+          <KeyboardArrowRight
+            sx={{
+              fontSize: '40px'
+            }}
+          />
+        </IconButton>
         <TextField
           fullWidth
           value={userMessage}
@@ -31,6 +51,11 @@ export default function ChatInput({ userMessage, setUserMessage }) {
             borderRadius: '10px 0px 0px 10px',
             border: 'none'
           }}
+          InputProps={{
+            style: {
+              color: '#ffffff'
+            }
+          }}
         />
       </Grid>
       <Grid
@@ -40,7 +65,7 @@ export default function ChatInput({ userMessage, setUserMessage }) {
           justifyContent: 'center',
           alignItems: 'center',
           height: '100%',
-          backgroundColor: '#3f51b5',
+          backgroundColor: '#1f1f1f',
           borderRadius: '0px 10px 10px 0px'
         }}
       >

@@ -11,21 +11,21 @@ export default function ChatItem({
   rowHeights
 }) {
   let styles = {
-    background: '#e3fde9',
-    color: '#404667',
+    background: '#4b637d',
+    color: '#ffffff',
     justifyContent: 'flex-end',
     icon: <Face6 />,
-    iconColor: '#747b76'
+    iconColor: '#92aac3'
   };
 
   if (conversation.user == 'ai') {
     styles = {
       ...styles,
-      background: '#3f6fb5',
+      background: '#1f232d ',
       color: '#ffffff',
       justifyContent: 'flex-start',
       icon: <SmartToy />,
-      iconColor: '#75a4e8'
+      iconColor: '#8990a1'
     };
   }
 
@@ -65,11 +65,12 @@ export default function ChatItem({
             elevation={5}
             ref={rowRef}
             sx={{
-              width: conversation.user === 'ai' ? '70%' : 'fit-content',
+              width: conversation.user === 'ai' ? '90%' : 'fit-content',
               padding: '10px',
               background: styles.background,
               color: styles.color,
               fontWeight: '500',
+              fontSize: '14px',
               margin: '5px'
             }}
           >

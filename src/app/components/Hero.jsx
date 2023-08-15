@@ -12,7 +12,7 @@ import Loader from './Loader';
 import { toast } from 'react-toastify';
 
 export default function Hero() {
-  const { setActiveChatId } = useContext(ChatContext);
+  const { setActiveChatId, setCurrentDocument } = useContext(ChatContext);
   const [loading, setLoading] = useState(false);
 
   const onDrop = useCallback(
@@ -28,7 +28,13 @@ export default function Hero() {
       })
         .then((response) => {
           setLoading(false);
-          setActiveChatId(response.data.checksum);
+          const { checksum, title, fileName } = response?.data;
+          setActiveChatId(checksum);
+          setCurrentDocument({
+            title,
+            id: checksum,
+            fileName
+          });
         })
         .catch((error) => {
           setLoading(false);
