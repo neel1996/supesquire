@@ -5,10 +5,10 @@ import { ThreeDots } from 'react-loader-spinner';
 export default function Loader() {
   return (
     <Stack alignItems="center">
-      <ThreeDots color="#6872a9" height="120" />
+      <ThreeDots color="#a4abce" height="120" />
       <Typography
         variant="caption"
-        color="#818ab5"
+        color="#a4abce"
         sx={{
           textAlign: 'left'
         }}

@@ -17,6 +17,15 @@ export default function Hero() {
 
   const onDrop = useCallback(
     (acceptedFiles) => {
+      if (acceptedFiles.length === 0) {
+        toast.error('Please upload a pdf file', {
+          position: 'bottom-left',
+          autoClose: 3000,
+          toastId: 'upload_error'
+        });
+        return;
+      }
+
       const formData = new FormData();
       formData.append('file', acceptedFiles[0]);
 
@@ -52,7 +61,11 @@ export default function Hero() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    noClick: true
+    noClick: true,
+    multiple: false,
+    accept: {
+      'application/pdf': ['.pdf']
+    }
   });
 
   return (
