@@ -18,6 +18,7 @@
     "eslint-config-next": "13.4.13",
     "langchain": "^0.0.125",
     "next": "13.4.13",
+    "openai": "^3.3.0",
     "pdf-parse": "^1.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",

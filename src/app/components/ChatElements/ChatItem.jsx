@@ -32,6 +32,11 @@ export default function ChatItem({
   useEffect(() => {
     rowHeights.current[rowPosition] = rowRef.current.clientHeight;
     listRef.current.resetAfterIndex(0);
+
+    console.info(
+      rowRef.current.clientWidth,
+      rowRef.current.parentNode.clientWidth
+    );
   }, [rowRef]);
 
   return (

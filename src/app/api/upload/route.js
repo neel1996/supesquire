@@ -2,10 +2,13 @@ import { upload } from '@/app/api/upload/supabaseUpload';
 import { NextResponse } from 'next/server';
 import { extractDocumentContent } from './documentHandler';
 import { createClient } from '@supabase/supabase-js';
+// import { embeddings } from './generateEmbeddings';
 
 const apiURL = process.env.SUPABASE_URL;
 const apiKey = process.env.SUPABASE_API_KEY;
 const supabase = createClient(apiURL, apiKey);
+
+globalThis.supabase = supabase;
 
 export const POST = async (req) => {
   const form = await req.formData();
@@ -28,50 +31,54 @@ export const POST = async (req) => {
 
       if (error) {
         console.error(error);
-        return errorResponse();
+        return NextResponse.json({ error }, { status: 500 });
       }
+
+      const newDocumentPayload = {
+        fileName: file.name,
+        checksum: res.path,
+        docContent
+      };
 
       if (count) {
         return NextResponse.json({ status: 200, ...documentData?.[0] });
       }
 
-      await insertNewDocument({
-        fileName: file.name,
-        checksum: res.path,
-        docContent
-      });
+      await insertNewDocument(newDocumentPayload);
 
       return NextResponse.json({ status: 200, checksum: res.path });
     })
     .catch((error) => {
       console.error(error);
-      return errorResponse();
+      return NextResponse.json({ error }, { status: 500 });
     });
 };
 
 const insertNewDocument = async ({ fileName, checksum, docContent }) => {
+  // const embedding = await embeddings(docContent);
+  const embedding = [];
+
   const { error } = await supabase
     .from(process.env.SUPABASE_DOCUMENTS_TABLE)
     .insert({
       checksum: checksum,
-      document_name: fileName
+      document_name: fileName,
+      content: docContent,
+      embedding: null
     });
 
   if (error) {
     console.error(error);
-    return errorResponse();
+    return NextResponse.json({ error }, { status: 500 });
   }
 
-  const { error: contentError } = await supabase
-    .from(process.env.SUPABASE_DOCUMENTS_CONTENT_TABLE)
-    .insert([{ checksum: checksum, text_content: docContent }]);
-
-  if (contentError) {
-    console.error(contentError);
-    return errorResponse();
-  }
-};
-
-const errorResponse = (error) => {
-  return NextResponse.json({ status: 500, error });
+  globalThis.qaDocuments = {
+    ...globalThis.qaDocuments,
+    [checksum]: {
+      checksum,
+      document_name: fileName,
+      content: docContent,
+      embedding: embedding
+    }
+  };
 };

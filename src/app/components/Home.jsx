@@ -18,7 +18,7 @@ export default function Home() {
     setSocket((prev) => {
       if (prev) return;
 
-      const socket = io(undefined, {
+      const socket = io(window.location.origin, {
         path: '/api/socket_io',
         addTrailingSlash: false
       });
@@ -41,7 +41,7 @@ export default function Home() {
         <History />
       </Grid>
       <Grid item xs={9}>
-        {!activeChatId ? <ChatContainer /> : <Hero />}
+        {activeChatId ? <ChatContainer /> : <Hero />}
       </Grid>
     </Grid>
   );

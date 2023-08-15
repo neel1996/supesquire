@@ -3,6 +3,6 @@
 import { createContext } from 'react';
 
 export const ChatContext = createContext({
-  activeChat: null,
+  activeChatId: null,
   socket: null
 });
