@@ -37,7 +37,7 @@ export default function Hero() {
       })
         .then((response) => {
           setLoading(false);
-          const { checksum, title, fileName, content } = response?.data;
+          const { checksum, title, fileName, content } = response.data;
           setActiveChatId(checksum);
           setCurrentDocument({
             title,
@@ -57,7 +57,7 @@ export default function Hero() {
           });
         });
     },
-    [setActiveChatId, setLoading]
+    [setActiveChatId, setLoading, setCurrentDocument]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

@@ -1,6 +1,6 @@
 import { Face6, SmartToy } from '@mui/icons-material';
 import { Card, Grid, Icon, ListItem } from '@mui/material';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 
 export default function ChatItem({
   rowPosition,
@@ -32,7 +32,7 @@ export default function ChatItem({
   useEffect(() => {
     rowHeights.current[rowPosition] = rowRef.current.clientHeight;
     listRef.current.resetAfterIndex(0);
-  }, [rowRef]);
+  }, [rowRef, rowHeights, listRef, rowPosition]);
 
   return (
     <ListItem

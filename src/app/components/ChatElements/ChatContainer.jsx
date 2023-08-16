@@ -1,6 +1,6 @@
 import { Card, Grid, Typography } from '@mui/material';
 import Image from 'next/image';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import ChatItem from './ChatItem';
 import ChatInput from './ChatInput';
 import { VariableSizeList as List } from 'react-window';
@@ -20,10 +20,12 @@ export default function ChatMessage() {
   const listRef = useRef(null);
   const rowHeights = useRef({});
 
-  const scrollToBottom = () =>
-    listRef?.current?.scrollToItem(conversations.length);
+  const scrollToBottom = useCallback(
+    () => listRef?.current?.scrollToItem(conversations.length, 'end'),
+    [conversations]
+  );
 
-  const chatRecords = async () => {
+  const chatRecords = useCallback(async () => {
     setLoading(true);
 
     await fetch(`/api/chat-records`, {
@@ -54,29 +56,19 @@ export default function ChatMessage() {
           toastId: 'chat_error'
         });
       });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [conversations]);
-
-  useEffect(() => {
-    setConversations([]);
-
-    chatRecords();
   }, [activeChatId]);
 
   useEffect(() => {
-    socket?.on('ai_message', async (data) => {
-      await fetch('/api/chat-records', {
-        method: 'PUT',
-        body: JSON.stringify({
-          checksum: activeChatId,
-          actor: 'ai',
-          message: JSON.parse(data).message
-        })
-      });
+    scrollToBottom();
+  }, [conversations, scrollToBottom]);
 
+  useEffect(() => {
+    setConversations([]);
+    chatRecords();
+  }, [activeChatId, chatRecords]);
+
+  useEffect(() => {
+    socket?.on('ai_message', async (data) => {
       setConversations((prev) => {
         let temp = [...prev];
         temp.pop();
@@ -105,7 +97,7 @@ export default function ChatMessage() {
         toastId: 'chat_error'
       });
     });
-  }, [socket]);
+  }, [activeChatId, socket]);
 
   const getRowHeight = (idx) => {
     return rowHeights.current[idx] + 20 || 80;
@@ -142,16 +134,23 @@ export default function ChatMessage() {
         }
       ];
     });
-
-    await fetch('/api/chat-records', {
-      method: 'PUT',
-      body: JSON.stringify({
-        checksum: activeChatId,
-        actor: 'human',
-        message: userMessage
-      })
-    });
   };
+
+  function Item({ style, index }) {
+    const rowRef = useRef({});
+
+    return (
+      <ChatItem
+        key={`chat-item-${activeChatId}-${index}`}
+        rowRef={rowRef}
+        rowHeights={rowHeights}
+        listRef={listRef}
+        style={style}
+        rowPosition={index}
+        conversation={conversations[index]}
+      />
+    );
+  }
 
   return (
     <Grid container flexDirection="column" height="100%">
@@ -208,20 +207,7 @@ export default function ChatMessage() {
               padding: '20px 0px'
             }}
           >
-            {({ index, style }) => {
-              const rowRef = useRef({});
-
-              return (
-                <ChatItem
-                  rowRef={rowRef}
-                  rowHeights={rowHeights}
-                  listRef={listRef}
-                  style={style}
-                  rowPosition={index}
-                  conversation={conversations[index]}
-                />
-              );
-            }}
+            {({ index, style }) => <Item style={style} index={index} />}
           </List>
         )}
       </Grid>

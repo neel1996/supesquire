@@ -34,6 +34,7 @@ export const POST = async (req) => {
       const newDocumentPayload = {
         fileName: file.name,
         checksum: res.checksum,
+        // eslint-disable-next-line no-control-regex
         docContent: docContent?.replace(/[^\x00-\x7F]/g, '')
       };
 

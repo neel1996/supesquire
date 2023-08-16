@@ -45,12 +45,11 @@ export default function Login() {
         password
       });
     }
-  }, []);
+  }, [email, login, password]);
 
   return (
     <Grid
       container
-      xs
       sx={{
         width: '100%',
         height: '100%'
