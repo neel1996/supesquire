@@ -1,5 +1,5 @@
 import { KeyboardArrowRight, Send } from '@mui/icons-material';
-import { Grid, Icon, IconButton, TextField } from '@mui/material';
+import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
 import React from 'react';
 
 export default function ChatInput({ userMessage, setUserMessage }) {
@@ -26,19 +26,6 @@ export default function ChatInput({ userMessage, setUserMessage }) {
           flexDirection: 'row'
         }}
       >
-        <IconButton
-          size="large"
-          sx={{
-            color: '#86878a',
-            padding: '0px'
-          }}
-        >
-          <KeyboardArrowRight
-            sx={{
-              fontSize: '40px'
-            }}
-          />
-        </IconButton>
         <TextField
           fullWidth
           value={userMessage}
@@ -52,6 +39,17 @@ export default function ChatInput({ userMessage, setUserMessage }) {
             border: 'none'
           }}
           InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <KeyboardArrowRight
+                  sx={{
+                    fontSize: '40px',
+                    color: '#86878a',
+                    padding: '0px'
+                  }}
+                />
+              </InputAdornment>
+            ),
             style: {
               color: '#ffffff'
             }

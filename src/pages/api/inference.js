@@ -1,15 +1,9 @@
-import { OpenAI } from 'langchain/llms/openai';
 import { Document } from 'langchain/document';
 import { loadQAStuffChain } from 'langchain/chains';
+import { llm } from '@/app/api/openai';
 
 export const inference = async ({ documentData, question }) => {
   const { content } = documentData;
-
-  const llm =
-    globalThis.llm ||
-    new OpenAI({
-      openAIApiKey: process.env.OPENAI_API_KEY
-    });
 
   const chain = loadQAStuffChain(llm, {
     verbose: true

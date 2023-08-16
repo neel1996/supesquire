@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 import { extractDocumentContent } from './documentHandler';
 import { loadQAChain } from 'langchain/chains';
 import { Document } from 'langchain/document';
+import { supabase } from '../supabase';
+import { llm } from '../openai';
 // import { embeddings } from './generateEmbeddings';
-
-const supabase = globalThis.supabase;
 
 export const POST = async (req) => {
   const form = await req.formData();
@@ -13,13 +13,13 @@ export const POST = async (req) => {
 
   const docContent = await extractDocumentContent(file);
 
-  return await upload(supabase, file)
+  return await upload(file)
     .then(async (res) => {
       const {
         data: documentData,
         error,
         count
-      } = await supabase
+      } = await supabase()
         .from(process.env.SUPABASE_DOCUMENTS_TABLE)
         .select('checksum', {
           count: 'exact'
@@ -54,7 +54,7 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
 
   const title = await documentTitle(docContent);
 
-  const { error } = await supabase
+  const { error } = await supabase()
     .from(process.env.SUPABASE_DOCUMENTS_TABLE)
     .insert({
       checksum: checksum,
@@ -69,23 +69,20 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
     return NextResponse.json({ error }, { status: 500 });
   }
 
-  globalThis.qaDocuments = {
-    ...globalThis.qaDocuments,
-    [checksum]: {
+  return NextResponse.json(
+    {
       checksum,
-      document_name: fileName,
-      content: docContent,
-      embedding: null,
-      title: title
+      title,
+      fileName,
+      content: docContent
+    },
+    {
+      status: 200
     }
-  };
-
-  return NextResponse.json({ status: 200, checksum, title, fileName });
+  );
 };
 
 const documentTitle = async (content) => {
-  const llm = globalThis.llm;
-
   const chain = loadQAChain(llm, {
     type: 'stuff',
     verbose: true

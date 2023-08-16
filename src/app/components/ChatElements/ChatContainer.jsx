@@ -6,11 +6,12 @@ import ChatInput from './ChatInput';
 import { VariableSizeList as List } from 'react-window';
 import { ChatContext } from '@/app/context/Context';
 import { toast } from 'react-toastify';
-import { Comment, Dna } from 'react-loader-spinner';
+import { Comment } from 'react-loader-spinner';
 import ChatHeader from './ChatHeader';
+import { Loader } from './Loader';
 
 export default function ChatMessage() {
-  const { activeChatId, socket } = useContext(ChatContext);
+  const { activeChatId, socket, currentDocument } = useContext(ChatContext);
 
   const [conversations, setConversations] = useState([]);
   const [userMessage, setUserMessage] = useState('');
@@ -22,6 +23,39 @@ export default function ChatMessage() {
   const scrollToBottom = () =>
     listRef?.current?.scrollToItem(conversations.length);
 
+  const chatRecords = async () => {
+    setLoading(true);
+
+    await fetch(`/api/chat-records`, {
+      method: 'POST',
+      body: JSON.stringify({
+        checksum: activeChatId
+      })
+    })
+      .then(async (res) => {
+        setLoading(false);
+        const data = await res.json();
+        setConversations((prev) => {
+          return [
+            ...prev,
+            ...data.map((item) => {
+              return {
+                user: item.actor,
+                message: item.message
+              };
+            })
+          ];
+        });
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.error(err);
+        toast.error('Cannot fetch chat records. Please try again later.', {
+          toastId: 'chat_error'
+        });
+      });
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [conversations]);
@@ -29,44 +63,20 @@ export default function ChatMessage() {
   useEffect(() => {
     setConversations([]);
 
-    const chatRecords = async () => {
-      setLoading(true);
-
-      await fetch(`/api/chat-records`, {
-        method: 'POST',
-        body: JSON.stringify({
-          checksum: activeChatId
-        })
-      })
-        .then(async (res) => {
-          setLoading(false);
-          const data = await res.json();
-          setConversations((prev) => {
-            return [
-              ...prev,
-              ...data.map((item) => {
-                return {
-                  user: item.actor,
-                  message: item.message
-                };
-              })
-            ];
-          });
-        })
-        .catch((err) => {
-          setLoading(false);
-          console.error(err);
-          toast.error('Cannot fetch chat records. Please try again later.', {
-            toastId: 'chat_error'
-          });
-        });
-    };
-
     chatRecords();
   }, [activeChatId]);
 
   useEffect(() => {
     socket?.on('ai_message', async (data) => {
+      await fetch('/api/chat-records', {
+        method: 'PUT',
+        body: JSON.stringify({
+          checksum: activeChatId,
+          actor: 'ai',
+          message: JSON.parse(data).message
+        })
+      });
+
       setConversations((prev) => {
         let temp = [...prev];
         temp.pop();
@@ -101,24 +111,46 @@ export default function ChatMessage() {
     return rowHeights.current[idx] + 20 || 80;
   };
 
-  const FallBackLoader = () => {
-    return (
-      <Grid
-        xs
-        item
-        sx={{
-          height: '100%',
-          userSelect: 'none',
-          justifyContent: 'center',
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }}
-      >
-        <Dna height={250} width={250} />
-      </Grid>
+  const submitHandler = async () => {
+    socket?.emit(
+      'message',
+      JSON.stringify({
+        documentId: activeChatId,
+        message: userMessage,
+        content: currentDocument?.content
+      })
     );
+
+    setUserMessage('');
+    setConversations((prev) => {
+      return [
+        ...prev,
+        {
+          user: 'human',
+          message: userMessage
+        },
+        {
+          user: 'ai',
+          message: (
+            <Comment
+              color="#ffffff"
+              height={50}
+              width={50}
+              backgroundColor="#1f232d"
+            />
+          )
+        }
+      ];
+    });
+
+    await fetch('/api/chat-records', {
+      method: 'PUT',
+      body: JSON.stringify({
+        checksum: activeChatId,
+        actor: 'human',
+        message: userMessage
+      })
+    });
   };
 
   return (
@@ -194,7 +226,7 @@ export default function ChatMessage() {
         )}
       </Grid>
       {loading ? (
-        <FallBackLoader />
+        <Loader />
       ) : (
         <form
           style={{
@@ -202,36 +234,7 @@ export default function ChatMessage() {
           }}
           onSubmit={(e) => {
             e.preventDefault();
-
-            socket?.emit(
-              'message',
-              JSON.stringify({
-                documentId: activeChatId,
-                message: userMessage
-              })
-            );
-
-            setUserMessage('');
-            setConversations((prev) => {
-              return [
-                ...prev,
-                {
-                  user: 'human',
-                  message: userMessage
-                },
-                {
-                  user: 'ai',
-                  message: (
-                    <Comment
-                      color="#ffffff"
-                      height={50}
-                      width={50}
-                      backgroundColor="#1f232d"
-                    />
-                  )
-                }
-              ];
-            });
+            submitHandler();
           }}
         >
           <ChatInput

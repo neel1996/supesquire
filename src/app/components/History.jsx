@@ -1,7 +1,5 @@
 import {
   AddBox,
-  AddCircle,
-  AddCircleOutline,
   HistoryEdu,
   HistoryOutlined
 } from '@mui/icons-material';
@@ -19,7 +17,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { ChatContext } from '../context/Context';
 
 export default function History() {
@@ -138,12 +136,13 @@ export default function History() {
                   }
                 }}
                 onClick={() => {
+                  setActiveChatId(conversation.checksum);
                   setCurrentDocument({
                     title: conversation.title,
                     id: conversation.checksum,
-                    fileName: conversation.document_name
+                    fileName: conversation.document_name,
+                    content: conversation.content
                   });
-                  setActiveChatId(conversation.checksum);
                 }}
               >
                 <ListItemIcon>

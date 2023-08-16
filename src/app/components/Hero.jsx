@@ -37,17 +37,18 @@ export default function Hero() {
       })
         .then((response) => {
           setLoading(false);
-          const { checksum, title, fileName } = response?.data;
+          const { checksum, title, fileName, content } = response?.data;
           setActiveChatId(checksum);
           setCurrentDocument({
             title,
             id: checksum,
-            fileName
+            fileName,
+            content
           });
         })
         .catch((error) => {
           setLoading(false);
-          console.log(error);
+          console.error(error);
 
           toast.error('Error uploading file', {
             position: 'bottom-left',

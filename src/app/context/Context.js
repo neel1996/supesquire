@@ -7,5 +7,12 @@ export const ChatContext = createContext({
   socket: null,
   conversationHistory: null,
   currentDocument: null,
-  supabase: null
+  supabase: null,
+  isLoggedIn: false,
+  setActiveChatId: null,
+  setSocket: null,
+  setConversationHistory: null,
+  setCurrentDocument: null,
+  setIsLoggedIn: null,
+  login: null
 });
