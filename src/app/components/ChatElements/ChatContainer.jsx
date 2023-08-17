@@ -9,6 +9,7 @@ import { Comment } from 'react-loader-spinner';
 import ChatHeader from './ChatHeader';
 import { Loader } from './Loader';
 import LogoCard from '../LogoCard';
+import TypingText from './TypingMessage';
 
 export default function ChatMessage() {
   const { activeChatId, socket, currentDocument } = useContext(ChatContext);
@@ -77,7 +78,12 @@ export default function ChatMessage() {
           ...temp,
           {
             user: 'ai',
-            message: JSON.parse(data).message
+            message: (
+              <TypingText
+                setConversations={setConversations}
+                message={JSON.parse(data).message}
+              />
+            )
           }
         ];
       });
