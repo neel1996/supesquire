@@ -1,11 +1,10 @@
-import { upload } from '@/app/api/upload/supabaseUpload';
+import { upload } from './supabaseUpload';
 import { NextResponse } from 'next/server';
 import { extractDocumentContent } from './documentHandler';
 import { loadQAChain } from 'langchain/chains';
 import { Document } from 'langchain/document';
 import { supabase } from '../supabase';
 import { llm } from '../openai';
-// import { embeddings } from './generateEmbeddings';
 
 export const POST = async (req) => {
   const form = await req.formData();
@@ -51,9 +50,18 @@ export const POST = async (req) => {
 };
 
 const insertNewDocument = async ({ fileName, checksum, docContent }) => {
-  // const embedding = await embeddings(docContent);
-
   const title = await documentTitle(docContent);
+
+  const { data: object, error: objectError } = await supabase()
+    .schema('storage')
+    .from('objects')
+    .select('id')
+    .eq('name', `${checksum}.pdf`);
+
+  if (objectError || object?.length === 0) {
+    console.error("Couldn't find object in storage.objects: ", objectError);
+    return NextResponse.json({ error: objectError }, { status: 500 });
+  }
 
   const { error } = await supabase()
     .from(process.env.SUPABASE_DOCUMENTS_TABLE)
@@ -62,7 +70,8 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
       document_name: fileName,
       content: docContent,
       embedding: null,
-      title: title
+      title: title,
+      uploaded_object_id: object[0].id
     });
 
   if (error) {
