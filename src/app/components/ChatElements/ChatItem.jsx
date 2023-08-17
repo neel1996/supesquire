@@ -70,7 +70,10 @@ export default function ChatItem({
               background: styles.background,
               color: styles.color,
               fontWeight: '500',
-              fontSize: '14px',
+              fontSize: {
+                xl: '14px',
+                xs: '12px'
+              },
               margin: '5px'
             }}
           >

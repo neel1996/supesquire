@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ChatContext } from './Context';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { toast } from 'react-toastify';
 
 export default function ChatProvider({ children }) {
   const [activeChatId, setActiveChatId] = useState(null);
@@ -10,6 +11,7 @@ export default function ChatProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [conversationHistory, setConversationHistory] = useState(null);
+  const [openDraw, setOpenDraw] = useState(false);
 
   const supabase = createClientComponentClient({
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -17,6 +19,8 @@ export default function ChatProvider({ children }) {
   });
 
   const login = async ({ email, password }) => {
+    setIsLoggedIn(false);
+
     const formData = new FormData();
     formData.append('email', email);
     formData.append('password', password);
@@ -25,12 +29,18 @@ export default function ChatProvider({ children }) {
       method: 'POST',
       body: formData
     })
-      .then(() => {
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Login failed');
+        }
         setIsLoggedIn(true);
       })
       .catch((error) => {
-        setIsLoggedIn(false);
         console.error({ error });
+        toast.error('Login failed', {
+          position: 'bottom-right'
+        });
+        setIsLoggedIn(false);
       });
   };
 
@@ -84,7 +94,9 @@ export default function ChatProvider({ children }) {
         supabase,
         isLoggedIn,
         setIsLoggedIn,
-        login
+        login,
+        openDraw,
+        setOpenDraw
       }}
     >
       {children}

@@ -7,7 +7,11 @@ export default function ChatInput({ userMessage, setUserMessage }) {
     <Grid
       container
       sx={{
-        width: '70%',
+        width: {
+          xl: '70%',
+          md: '70%',
+          xs: '90%'
+        },
         alignContent: 'center',
         alignItems: 'center',
         marginLeft: 'auto',
@@ -19,7 +23,9 @@ export default function ChatInput({ userMessage, setUserMessage }) {
       }}
     >
       <Grid
-        xs={11}
+        xl={11}
+        sm={11}
+        xs={10}
         sx={{
           display: 'flex',
           alignItems: 'center',
@@ -57,7 +63,9 @@ export default function ChatInput({ userMessage, setUserMessage }) {
         />
       </Grid>
       <Grid
-        xs={1}
+        xl={1}
+        sm={1}
+        xs={2}
         sx={{
           display: 'flex',
           justifyContent: 'center',

@@ -1,5 +1,4 @@
-import { Card, Grid, Typography } from '@mui/material';
-import Image from 'next/image';
+import { Grid, Typography } from '@mui/material';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import ChatItem from './ChatItem';
 import ChatInput from './ChatInput';
@@ -9,6 +8,7 @@ import { toast } from 'react-toastify';
 import { Comment } from 'react-loader-spinner';
 import ChatHeader from './ChatHeader';
 import { Loader } from './Loader';
+import LogoCard from '../LogoCard';
 
 export default function ChatMessage() {
   const { activeChatId, socket, currentDocument } = useContext(ChatContext);
@@ -171,24 +171,7 @@ export default function ChatMessage() {
       >
         {conversations.length === 0 ? (
           <>
-            <Card
-              elevation={10}
-              sx={{
-                width: 'fit-content',
-                padding: '20px',
-                background: '#ecefff',
-                borderRadius: '20px',
-                margin: '0px auto'
-              }}
-            >
-              <Image
-                src="/logo.png"
-                alt="Logo"
-                width={150}
-                height={150}
-                draggable={false}
-              />
-            </Card>
+            <LogoCard />
             <Typography sx={{ color: '#eeeeee', padding: '20px 0px' }}>
               Your document has been processed! Quiz away!
             </Typography>

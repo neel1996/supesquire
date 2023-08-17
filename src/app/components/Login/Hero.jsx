@@ -1,32 +1,21 @@
-import { Card, Stack, Typography } from '@mui/material';
-import Image from 'next/image';
+import { Stack, Typography } from '@mui/material';
 import React from 'react';
+import LogoCard from '../LogoCard';
 
 export default function Hero() {
   return (
     <Stack
       sx={{
-        display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: 'auto',
-        marginRight: 'auto'
+        alignItems: 'center',
+        margin: '0px auto'
       }}
+      spacing={2}
     >
-      <Card
-        elevation={10}
-        sx={{
-          padding: '10px',
-          borderRadius: '10px',
-          background: '#d9deff'
-        }}
-      >
-        <Image src={'/logo.png'} width={120} height={120} alt="logo" />
-      </Card>
+      <LogoCard />
       <Stack
         sx={{
-          textAlign: 'center',
-          margin: '10px 0px'
+          textAlign: 'center'
         }}
       >
         <Typography
@@ -35,12 +24,26 @@ export default function Hero() {
             fontWeight: 'bold',
             color: '#94a4ff'
           }}
+          fontSize={{
+            xl: '1.6rem',
+            lg: '1.5rem',
+            md: '1.3rem',
+            sm: '1.2rem',
+            xs: '1rem'
+          }}
         >
           chat with your document in real time
         </Typography>
         <Typography
           variant="subtitle1"
           sx={{ color: '#cacaca', padding: '10px 0px' }}
+          fontSize={{
+            xl: '1rem',
+            lg: '0.8rem',
+            md: '0.8rem',
+            sm: '0.6rem',
+            xs: '0.5rem'
+          }}
         >
           powered by OpenAI and Supabase
         </Typography>

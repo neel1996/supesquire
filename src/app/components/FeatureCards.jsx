@@ -23,11 +23,18 @@ export default function FeatureCards() {
           key={index}
           sx={{
             backgroundColor: '#3b3d4d',
-            padding: '20px',
+            padding: '10px',
             boxShadow: '0px -1px 11px 0px rgb(148 ,164, 255, 0.19)',
             borderRadius: '10px',
-            width: '350px',
-            minWidth: '300px',
+            minWidth: '200px',
+            maxWidth: {
+              xl: '300px',
+              xs: '200px'
+            },
+            width: {
+              xl: '300px',
+              xs: '220px'
+            },
             margin: '20px 30px'
           }}
         >
@@ -35,7 +42,13 @@ export default function FeatureCards() {
             <Icon
               component={feature.icon}
               sx={{
-                fontSize: '60px',
+                fontSize: {
+                  xl: '60px',
+                  lg: '50px',
+                  md: '40px',
+                  sm: '40px',
+                  xs: '40px'
+                },
                 color: '#94a4ff'
               }}
             />
@@ -43,12 +56,18 @@ export default function FeatureCards() {
           <Typography
             sx={{
               padding: '20px 0px',
-              width: '80%',
+              width: '90%',
               marginLeft: 'auto',
               marginRight: 'auto',
               color: '#94a4ff',
               textAlign: 'left',
-              fontSize: '18px'
+              fontSize: {
+                xl: '18px',
+                lg: '16px',
+                md: '14px',
+                sm: '14px',
+                xs: '14px'
+              }
             }}
           >
             {feature.description}

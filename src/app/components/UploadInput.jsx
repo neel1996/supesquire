@@ -1,46 +1,40 @@
-import { Card, Container, Typography } from '@mui/material';
-import Image from 'next/image';
+import { Typography } from '@mui/material';
 import React from 'react';
+import LogoCard from './LogoCard';
 
 export default function UploadInput({ getInputProps }) {
   return (
     <>
       <input {...getInputProps()} />
-      <Container
-        sx={{
-          padding: '10px',
-          userSelect: 'none'
-        }}
-      >
-        <Card
-          elevation={10}
-          sx={{
-            width: 'fit-content',
-            padding: '20px',
-            background: '#ecefff',
-            borderRadius: '20px',
-            margin: '0px auto'
-          }}
-        >
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={150}
-            height={150}
-            draggable={false}
-          />
-        </Card>
-      </Container>
+      <LogoCard />
       <Typography
-        variant="h4"
         sx={{
           fontWeight: 'bold',
-          color: '#94a4ff'
+          color: '#94a4ff',
+          fontSize: {
+            xl: '30px',
+            lg: '24px',
+            md: '20px',
+            sm: '20px',
+            xs: '20px'
+          }
         }}
       >
         chat with your document in real time
       </Typography>
-      <Typography sx={{ color: '#cacaca', padding: '10px 0px' }}>
+      <Typography
+        sx={{
+          color: '#cacaca',
+          padding: '10px 0px',
+          fontSize: {
+            xl: '20px',
+            lg: '16px',
+            md: '14px',
+            sm: '14px',
+            xs: '14px'
+          }
+        }}
+      >
         powered by OpenAI and Supabase
       </Typography>
     </>

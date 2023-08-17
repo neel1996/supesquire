@@ -62,7 +62,6 @@ export default function Hero() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    noClick: true,
     multiple: false,
     accept: {
       'application/pdf': ['.pdf']
@@ -91,19 +90,50 @@ export default function Hero() {
         <>
           <Stack
             direction="row"
-            flexWrap={'wrap'}
+            flexWrap="wrap"
             justifyContent="center"
             padding="20px"
           >
             <FeatureCards />
           </Stack>
           <Stack
-            sx={{
-              bottom: 0,
-              position: 'fixed'
+            display={{
+              xl: 'block',
+              lg: 'block',
+              xs: 'none'
             }}
           >
-            {isDragActive ? (
+            <Grid
+              sx={{
+                color: '#a4a8c2'
+              }}
+            >
+              <UploadFileRounded
+                sx={{
+                  fontSize: '30px'
+                }}
+              />
+              <Typography
+                sx={{
+                  fontSize: {
+                    xl: '14px',
+                    xs: '12px'
+                  },
+                  margin: '10px 0px'
+                }}
+              >
+                Drag and drop to upload the document
+              </Typography>
+            </Grid>
+          </Stack>
+          <Stack
+            sx={{
+              bottom: 0,
+              position: 'fixed',
+              transition: 'opacity 0.3s ease-in-out'
+            }}
+          >
+            {isDragActive && (
               <CloudUpload
                 sx={{
                   color: 'rgb(63,81,181)',
@@ -111,26 +141,6 @@ export default function Hero() {
                   margin: '20px 0px'
                 }}
               />
-            ) : (
-              <Grid
-                sx={{
-                  color: '#a4a8c2'
-                }}
-              >
-                <UploadFileRounded
-                  sx={{
-                    fontSize: '30px'
-                  }}
-                />
-                <Typography
-                  sx={{
-                    fontSize: '14px',
-                    margin: '10px 0px'
-                  }}
-                >
-                  Drag and drop to upload the document
-                </Typography>
-              </Grid>
             )}
           </Stack>
         </>

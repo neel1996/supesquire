@@ -1,9 +1,8 @@
 'use client';
 
-import { ChatContext } from '@/app/context/Context';
 import { AlternateEmail, Key } from '@mui/icons-material';
 import { Grid } from '@mui/material';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LoginInputs from './LoginInputs';
 import Hero from './Hero';
 import Loader from './Loader';
@@ -13,8 +12,6 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const { login } = useContext(ChatContext);
 
   const inputData = [
     {
@@ -38,14 +35,7 @@ export default function Login() {
       isFirstRender.current = false;
       return;
     }
-
-    if (email && password) {
-      login({
-        email,
-        password
-      });
-    }
-  }, [email, login, password]);
+  }, []);
 
   return (
     <Grid
@@ -58,14 +48,32 @@ export default function Login() {
       {isFirstRender.current && <Loader />}
       {!isFirstRender.current && (
         <>
-          <Hero />
-          <LoginInputs
-            inputData={inputData}
-            credentials={{
-              email,
-              password
+          <Grid
+            item
+            xl={4}
+            lg={4}
+            md={5}
+            sm={12}
+            xs={12}
+            display={{
+              xl: 'flex',
+              lg: 'flex',
+              md: 'flex',
+              sm: 'none',
+              xs: 'none'
             }}
-          />
+          >
+            <Hero />
+          </Grid>
+          <Grid item xl={8} lg={8} md={7} sm={12} xs={12}>
+            <LoginInputs
+              inputData={inputData}
+              credentials={{
+                email,
+                password
+              }}
+            />
+          </Grid>
         </>
       )}
     </Grid>

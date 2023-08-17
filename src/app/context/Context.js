@@ -14,5 +14,7 @@ export const ChatContext = createContext({
   setConversationHistory: null,
   setCurrentDocument: null,
   setIsLoggedIn: null,
-  login: null
+  login: null,
+  openDraw: false,
+  setOpenDraw: null
 });

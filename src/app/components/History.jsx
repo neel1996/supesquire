@@ -1,32 +1,20 @@
-import {
-  AddBox,
-  HistoryEdu,
-  HistoryOutlined
-} from '@mui/icons-material';
+import { AddBox, HistoryOutlined } from '@mui/icons-material';
 import {
   Box,
   Grid,
   IconButton,
   List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
   Skeleton,
   Stack,
-  Tooltip,
   Typography
 } from '@mui/material';
 import { useContext } from 'react';
 import { ChatContext } from '../context/Context';
+import ConversationHistory from './ConversationHistory';
 
 export default function History() {
-  const {
-    conversationHistory,
-    activeChatId,
-    setActiveChatId,
-    setCurrentDocument
-  } = useContext(ChatContext);
+  const { conversationHistory, setActiveChatId, setOpenDraw } =
+    useContext(ChatContext);
 
   const FallbackSkeleton = () => {
     return (
@@ -101,6 +89,7 @@ export default function History() {
             }}
             onClick={() => {
               setActiveChatId(null);
+              setOpenDraw(false);
             }}
           >
             <AddBox
@@ -119,56 +108,7 @@ export default function History() {
         {conversationHistory === null ? (
           <FallbackSkeleton />
         ) : (
-          conversationHistory.map((conversation) => (
-            <ListItem disablePadding key={conversation.id}>
-              <ListItemButton
-                sx={{
-                  padding: '15px 10px',
-                  background:
-                    conversation.checksum === activeChatId
-                      ? '#7f8cd4'
-                      : '#313338',
-                  color: '#ffffff',
-                  borderRadius: '1px',
-                  fontSize: '12px',
-                  '&:hover': {
-                    background: '#7f8cd4'
-                  }
-                }}
-                onClick={() => {
-                  setActiveChatId(conversation.checksum);
-                  setCurrentDocument({
-                    title: conversation.title,
-                    id: conversation.checksum,
-                    fileName: conversation.document_name,
-                    content: conversation.content
-                  });
-                }}
-              >
-                <ListItemIcon>
-                  <HistoryEdu
-                    sx={{
-                      color: '#ffffff'
-                    }}
-                  />
-                </ListItemIcon>
-                <ListItemText>
-                  <Tooltip title={conversation.title} placement="right-end">
-                    <Typography
-                      sx={{
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        width: '90%'
-                      }}
-                    >
-                      {conversation.title}
-                    </Typography>
-                  </Tooltip>
-                </ListItemText>
-              </ListItemButton>
-            </ListItem>
-          ))
+          <ConversationHistory />
         )}
       </List>
     </Box>

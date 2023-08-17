@@ -1,35 +1,40 @@
 import { ChatContext } from '@/app/context/Context';
-import { Button, Grid, InputAdornment, Stack, TextField } from '@mui/material';
+import { Box, Button, InputAdornment, Stack, TextField } from '@mui/material';
 import React, { useContext } from 'react';
+import MobileHeader from './MobileHeader';
 
 export default function LoginInputs({ inputData, credentials }) {
   const { login } = useContext(ChatContext);
 
   return (
-    <Grid
-      item
-      xs={7}
+    <Stack
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        height: '100%',
         backgroundColor: '#e0e0e0',
         backgroundImage: 'url(background.png)'
       }}
     >
-      <Stack
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          height: '100%'
+      <MobileHeader />
+      <Box
+        width={{
+          xl: '50%',
+          lg: '50%',
+          md: '70%',
+          sm: '70%',
+          xs: '90%'
         }}
       >
         <form
           style={{
-            width: '50%',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            width: '100%'
           }}
           onSubmit={(e) => {
             e.preventDefault();
@@ -77,7 +82,7 @@ export default function LoginInputs({ inputData, credentials }) {
             Login
           </Button>
         </form>
-      </Stack>
-    </Grid>
+      </Box>
+    </Stack>
   );
 }

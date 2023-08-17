@@ -38,9 +38,33 @@ export default function ChatHeader() {
             }}
           />
         </IconButton>
-        <Stack color="#ffffff">
-          <Typography variant="body1">{currentDocument?.title}</Typography>
-          <Typography variant="caption">{currentDocument?.fileName}</Typography>
+        <Stack
+          color="#ffffff"
+          sx={{
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            width: '90%'
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden'
+            }}
+          >
+            {currentDocument?.title}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              textOverflow: 'ellipsis',
+              overflow: 'hidden'
+            }}
+          >
+            {currentDocument?.fileName}
+          </Typography>
         </Stack>
         <IconButton
           size="large"
