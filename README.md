@@ -1,34 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center">
+supesquire
+</h1>
 
-## Getting Started
+<div align="center">
+<p align="center">
+<img src="https://github.com/neel1996/supesquire/assets/47709856/c88f6f34-0368-4aec-a12a-1aee3e4ff3d2" alt="logo" style="width:150px;text-align:center;" />
+</p>
+<p align="center">
+chat with your documents
+</p>
+</div>
 
-First, run the development server:
+# Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+Supesquire is a `Next.js`` application powered by OpenAI and supabase. The application can be used to chat with your PDF documents. The application uses OpenAI's `gpt-3.5-turbo` model to generate contextually relevant answers to the questions asked by the user about the document. The application uses supabase for user authentication, storing the PDF document, persisting the document history and all the chat records in the Database. The application uses langchain to extract textual content from the PDF document and generate tailored prompts for document question & answering.
+
+> The entire project is built with JS alone
+
+# Stack
+
+- **Supabase**: User authentication, storing the PDF document, persisting the document history and all the chat records in the Database
+- **langchain**: Extract textual content from the PDF document and generate tailored prompts for document question & answering
+- **Next.js**: UI and Backend
+
+# Supabase setup
+
+- Create a supabase project
+- The [supabase.sql](supabase.sql) has the queries to create the tables and storage bucket required for the application. Run the queries in the SQL editor in supabase
+
+# Local setup
+
+- Clone the repo
+- Install the dependencies using `yarn`
+- Create a `.env.local` file in the root of the project and add the following environment variables
+
 ```
+SUPABASE_URL=<supabase_url>
+SUPABASE_API_KEY=<supabase_api_key>
+SUPABASE_BUCKET=<supabase_bucket>
+SUPABASE_DOCUMENTS_TABLE=<supabase_documents_table>
+SUPABASE_CHAT_RECORDS_TABLE=<supabase_chat_records_table>
+ORIGIN=<origin>
+OPENAI_API_KEY=<openai_api_key>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+NEXT_PUBLIC_SUPABASE_URL=<supabase_url>
+NEXT_PUBLIC_SUPABASE_API_KEY=<supabase_api_key>
+NEXT_PUBLIC_SUPABASE_BUCKET=<supabase_bucket>
+```
