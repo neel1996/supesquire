@@ -47,3 +47,5 @@ NEXT_PUBLIC_SUPABASE_URL=<supabase_url>
 NEXT_PUBLIC_SUPABASE_API_KEY=<supabase_api_key>
 NEXT_PUBLIC_SUPABASE_BUCKET=<supabase_bucket>
 ```
+
+- To start the application, run `yarn dev`

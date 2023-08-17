@@ -77,7 +77,7 @@ export default function Hero() {
         alignItems: 'center',
         height: '100%',
         textAlign: 'center',
-        overflowY: 'auto',
+        overflow: 'hidden',
         opacity: isDragActive ? 0.5 : 1,
         transition: 'opacity 0.3s ease-in-out'
       }}

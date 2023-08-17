@@ -1,0 +1,6 @@
+.next/
+.env
+.gitignore
+supabase.sql
+LICENSE
+node_modules/

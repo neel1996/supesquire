@@ -1,4 +1,4 @@
-import { Grid, Typography } from '@mui/material';
+import { Alert, Grid, Typography } from '@mui/material';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import ChatItem from './ChatItem';
 import ChatInput from './ChatInput';
@@ -175,6 +175,9 @@ export default function ChatMessage() {
             <Typography sx={{ color: '#eeeeee', padding: '20px 0px' }}>
               Your document has been processed! Quiz away!
             </Typography>
+            <Alert severity="info" sx={{ textAlign: 'center' }}>
+              Ask anything about the <b>{currentDocument?.title}</b>
+            </Alert>
           </>
         ) : (
           <List

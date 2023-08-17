@@ -21,6 +21,26 @@ export default function ConversationHistory() {
 
   return (
     <>
+      {conversationHistory?.length === 0 && (
+        <ListItem
+          disablePadding
+          sx={{
+            padding: '15px 10px',
+            background: '#535876',
+            color: '#ffffff',
+            borderRadius: '1px',
+            fontSize: '12px',
+            userSelect: 'none'
+          }}
+        >
+          <ListItemText>
+            <Typography variant="subtitle1">No conversations yet</Typography>
+            <Typography variant="caption">
+              Upload a document to start a conversation
+            </Typography>
+          </ListItemText>
+        </ListItem>
+      )}
       {conversationHistory.map((conversation) => (
         <ListItem disablePadding key={conversation.id}>
           <ListItemButton
