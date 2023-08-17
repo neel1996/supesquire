@@ -13,7 +13,7 @@ chat with your documents
 
 # Overview
 
-Supesquire is a `Next.js`` application powered by OpenAI and supabase. The application can be used to chat with your PDF documents. The application uses OpenAI's `gpt-3.5-turbo` model to generate contextually relevant answers to the questions asked by the user about the document. The application uses supabase for user authentication, storing the PDF document, persisting the document history and all the chat records in the Database. The application uses langchain to extract textual content from the PDF document and generate tailored prompts for document question & answering.
+Supesquire is a `Next.js` application powered by OpenAI and supabase. The application can be used to chat with your PDF documents. The application uses OpenAI's `gpt-3.5-turbo` model to generate contextually relevant answers to the questions asked by the user about the document. The application uses supabase for user authentication, storing the PDF document, persisting the document history and all the chat records in the Database. The application uses langchain to extract textual content from the PDF document and generate tailored prompts for document question & answering.
 
 > The entire project is built with JS alone
 
