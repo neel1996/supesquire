@@ -3,8 +3,6 @@ import { inference } from './inference';
 import { createClient } from '@supabase/supabase-js';
 
 export default function handler(req, res) {
-  if (res.socket.server.io) return res.end();
-
   const io = new Server(res.socket.server, {
     path: '/api/socket_io',
     addTrailingSlash: false
@@ -53,6 +51,10 @@ export default function handler(req, res) {
 const supabaseClient = (req) => {
   try {
     const cookie = req.headers.cookie;
+    if (!cookie) {
+      return null;
+    }
+
     const cookieValue = decodeURIComponent(cookie.split('=')[1]);
     const authToken = cookieValue
       .replace('[', '')
