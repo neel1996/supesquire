@@ -17,10 +17,19 @@ export const POST = async (req) => {
     }
   );
 
-  await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
+  const { error } = await supabase.auth
+    .signInWithPassword({
+      email,
+      password
+    })
+    .catch((error) => {
+      error;
+    });
+
+  if (error) {
+    console.error({ error });
+    return NextResponse.json({ error }, { status: 401 });
+  }
 
   return NextResponse.redirect(requestURL.origin, {
     status: 301
