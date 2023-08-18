@@ -114,8 +114,7 @@ export default function ChatMessage() {
       'message',
       JSON.stringify({
         documentId: activeChatId,
-        message: userMessage,
-        content: currentDocument?.content
+        message: userMessage
       })
     );
 

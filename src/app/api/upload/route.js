@@ -10,7 +10,7 @@ export const POST = async (req) => {
   const form = await req.formData();
   const file = form.get('file');
 
-  const docContent = await extractDocumentContent(file);
+  const { content, chunks } = await extractDocumentContent(file);
 
   return await upload(file)
     .then(async (res) => {
@@ -33,15 +33,15 @@ export const POST = async (req) => {
       const newDocumentPayload = {
         fileName: file.name,
         checksum: res.checksum,
-        // eslint-disable-next-line no-control-regex
-        docContent: docContent?.replace(/[^\x00-\x7F]/g, '')
+        docContent: content,
+        chunks
       };
 
       if (count) {
         return NextResponse.json({ status: 200, ...documentData?.[0] });
       }
 
-      return await insertNewDocument(newDocumentPayload);
+      return await saveDocument(newDocumentPayload);
     })
     .catch((error) => {
       console.error(error);
@@ -49,7 +49,7 @@ export const POST = async (req) => {
     });
 };
 
-const insertNewDocument = async ({ fileName, checksum, docContent }) => {
+const saveDocument = async ({ fileName, checksum, docContent, chunks }) => {
   const title = await documentTitle(docContent);
 
   const { data: object, error: objectError } = await supabase()
@@ -69,7 +69,6 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
       checksum: checksum,
       document_name: fileName,
       content: docContent,
-      embedding: null,
       title: title,
       uploaded_object_id: object[0].id
     });
@@ -79,12 +78,23 @@ const insertNewDocument = async ({ fileName, checksum, docContent }) => {
     return NextResponse.json({ error }, { status: 500 });
   }
 
+  const { error: saveChunksError } = await saveDocumentChunks(checksum, chunks);
+  if (saveChunksError) {
+    console.error(saveChunksError);
+
+    await supabase()
+      .from(process.env.SUPABASE_DOCUMENTS_TABLE)
+      .delete({ count: 1 })
+      .eq('checksum', checksum);
+
+    return NextResponse.json({ error: saveChunksError }, { status: 500 });
+  }
+
   return NextResponse.json(
     {
       checksum,
       title,
-      fileName,
-      content: docContent
+      fileName
     },
     {
       status: 200
@@ -101,12 +111,34 @@ const documentTitle = async (content) => {
   const { text } = await chain.call({
     input_documents: [
       new Document({
-        pageContent: content
+        pageContent: content?.slice(0, 20000)
       })
     ],
     question:
-      'What is the title of this document? Respond only the title and nothing else'
+      'What is the title of this document?\nRespond only the title and nothing else\nDo not include any quotations or a prefix in the title'
   });
 
   return text;
+};
+
+const saveDocumentChunks = async (checksum, chunks) => {
+  const { content, embeddings } = chunks;
+
+  for (let i = 0; i < content.length; i++) {
+    const { error } = await supabase()
+      .from('document_chunks')
+      .insert({
+        document_checksum: checksum,
+        chunk_number: i + 1,
+        chunk_content: content[i],
+        chunk_embedding: embeddings[i]
+      });
+
+    if (error) {
+      console.error({ error });
+      return { error };
+    }
+  }
+
+  return { error: null };
 };

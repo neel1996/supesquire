@@ -26,14 +26,12 @@ export default function handler(req, res) {
         actor: 'human'
       });
 
-      const documentData = {
-        documentId: parsed.documentId,
-        message: parsed.message,
-        content: parsed.content
-      };
-
-      inference({ documentData, question: parsed.message }).then(
-        async (answer) => {
+      inference({ documentId, question: parsed.message, supabase }).then(
+        async ({ answer, error }) => {
+          if (error) {
+            socket.emit('chat_error', JSON.stringify({ message: error }));
+            return;
+          }
           await saveChat(socket, supabase, {
             message: answer,
             checksum: documentId,

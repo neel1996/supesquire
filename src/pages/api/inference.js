@@ -1,9 +1,20 @@
 import { Document } from 'langchain/document';
 import { loadQAStuffChain } from 'langchain/chains';
-import { llm } from '@/app/api/openai';
+import { llm, openAIEmbedding } from '@/app/api/openai';
 
-export const inference = async ({ documentData, question }) => {
-  const { content } = documentData;
+export const inference = async ({ documentId, question, supabase }) => {
+  const { content, error } = await filterSimilarVectors(
+    supabase,
+    documentId,
+    question
+  );
+
+  if (error) {
+    console.error({ error });
+    return {
+      error
+    };
+  }
 
   const chain = loadQAStuffChain(llm, {
     verbose: true
@@ -20,5 +31,26 @@ export const inference = async ({ documentData, question }) => {
     question
   });
 
-  return text;
+  return { answer: text };
+};
+
+const filterSimilarVectors = async (supabase, documentId, message) => {
+  const { data: vectors, error } = await supabase.rpc('match_documents', {
+    query_embedding: await openAIEmbedding.embedQuery(message),
+    match_count: 5,
+    filter_checksum: documentId
+  });
+
+  if (error) {
+    return { error };
+  }
+
+  return {
+    content: vectors
+      .map((v) => {
+        return v.chunk_content;
+      })
+      .join(' '),
+    error: null
+  };
 };

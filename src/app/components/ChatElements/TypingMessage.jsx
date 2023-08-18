@@ -4,12 +4,13 @@ export default function TypingText({ setConversations, message }) {
   return (
     <TypeWriter
       options={{
-        delay: 20,
+        delay: 1,
         cursor: ''
       }}
       onInit={(typewriter) => {
         typewriter
           .typeString(message)
+          .changeDelay(1)
           .callFunction(() => {
             setConversations((prev) => {
               return [

@@ -1,5 +1,18 @@
-import { OpenAI } from 'langchain/llms/openai';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { OpenAIApi } from 'openai';
 
-export const llm = new OpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY
+export const llm = new ChatOpenAI({
+  openAIApiKey: process.env.OPENAI_API_KEY,
+  modelName: 'gpt-3.5-turbo',
+  temperature: 0
+});
+
+export const openAI = new OpenAIApi({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+export const openAIEmbedding = new OpenAIEmbeddings({
+  openAIApiKey: process.env.OPENAI_API_KEY,
+  modelName: 'text-embedding-ada-002'
 });
