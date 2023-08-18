@@ -4,18 +4,18 @@ import { MemoryVectorStore } from 'langchain/vectorstores/memory';
 import { openAIEmbedding } from '../openai';
 
 export const extractDocumentContent = async (file) => {
-  const docs = await new PDFLoader(file).loadAndSplit(
+  const chunks = await new PDFLoader(file).loadAndSplit(
     new CharacterTextSplitter({
-      chunkSize: 20000, //splits content into each chunk containing 18K chars
+      chunkSize: 5000,
       chunkOverlap: 100,
       lengthFunction: (str) => str.length,
       separator: ' '
     })
   );
 
-  const store = await MemoryVectorStore.fromDocuments(docs, openAIEmbedding);
+  const store = await MemoryVectorStore.fromDocuments(chunks, openAIEmbedding);
 
-  const splitDocs = docs.map((doc) => {
+  const splitDocs = chunks.map((doc) => {
     return (
       doc.pageContent
         .replace(/\n/g, ' ')
