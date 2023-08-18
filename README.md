@@ -13,20 +13,21 @@ chat with your documents
 
 # Overview
 
-Supesquire is a `Next.js` application powered by OpenAI and supabase. The application can be used to chat with your PDF documents. The application uses OpenAI's `gpt-3.5-turbo` model to generate contextually relevant answers to the questions asked by the user about the document. The application uses supabase for user authentication, storing the PDF document, persisting the document history and all the chat records in the Database. The application uses langchain to extract textual content from the PDF document and generate tailored prompts for document question & answering.
+Supesquire is a `Next.js` application powered by OpenAI and supabase. It is well suited for chatting with your PDF documents in realtime. The application uses OpenAI's `gpt-3.5-turbo` model to generate contextually relevant answers to the questions asked by the user about the document. The application uses supabase for user authentication, storing the PDF document, persisting the document history, and all the chat records in the Database. The application uses langchain to extract textual content from the PDF document and generate tailored prompts for document Q&A
 
 > The entire project is built with JS alone
 
 # Stack
 
 - **Supabase**: User authentication, storing the PDF document, persisting the document history and all the chat records in the Database
-- **langchain**: Extract textual content from the PDF document and generate tailored prompts for document question & answering
+- **langchain**: Extract textual content from the PDF document and generate tailored prompts for document questions & answering
 - **Next.js**: UI and Backend
 
 # Supabase setup
 
 - Create a supabase project
-- The [supabase.sql](supabase.sql) has the queries to create the tables and storage bucket required for the application. Run the queries in the SQL editor in supabase
+- With supabase [RLS](https://supabase.com/docs/guides/auth/row-level-security) enabled, the application relies on supabase authentication. Ensure that you create a [new user in your supabase project](https://supabase.com/docs/guides/auth) with a valid email ID and a password to access this application
+- The [supabase.sql](supabase.sql) has the queries to create the tables and storage bucket required for the application. Execute the queries on supabase's SQL editor to set up all the requirements for this application
 
 # Local setup
 
