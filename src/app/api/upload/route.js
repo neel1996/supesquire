@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { extractDocumentContent } from './documentHandler';
 import { loadQAChain } from 'langchain/chains';
 import { Document } from 'langchain/document';
+import SqlString from 'sqlstring';
 import { supabase } from '../supabase';
 import { llm } from '../openai';
 
@@ -68,7 +69,7 @@ const saveDocument = async ({ fileName, checksum, docContent, chunks }) => {
     .insert({
       checksum: checksum,
       document_name: fileName,
-      content: docContent,
+      content: SqlString.escape(docContent),
       title: title,
       uploaded_object_id: object[0].id
     });
@@ -111,7 +112,7 @@ const documentTitle = async (content) => {
   const { text } = await chain.call({
     input_documents: [
       new Document({
-        pageContent: content?.slice(0, 20000)
+        pageContent: content?.slice(0, 6000)
       })
     ],
     question:
@@ -130,7 +131,7 @@ const saveDocumentChunks = async (checksum, chunks) => {
       .insert({
         document_checksum: checksum,
         chunk_number: i + 1,
-        chunk_content: content[i],
+        chunk_content: SqlString.escape(content[i]),
         chunk_embedding: embeddings[i]
       });
 

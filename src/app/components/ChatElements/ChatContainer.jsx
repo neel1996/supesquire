@@ -100,7 +100,8 @@ export default function ChatMessage() {
       });
 
       toast.error('Cannot send message. Please try again later.', {
-        toastId: 'chat_error'
+        toastId: 'chat_error',
+        position: 'bottom-left'
       });
     });
   }, [activeChatId, socket]);

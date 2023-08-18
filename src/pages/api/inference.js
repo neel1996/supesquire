@@ -26,12 +26,17 @@ export const inference = async ({ documentId, question, supabase }) => {
     })
   ];
 
-  const { text } = await chain.call({
-    input_documents: docs,
-    question
-  });
+  const { text, aiError } = await chain
+    .call({
+      input_documents: docs,
+      question
+    })
+    .catch((error) => {
+      console.error({ error });
+      return { aiError: error };
+    });
 
-  return { answer: text };
+  return { answer: text, error: aiError };
 };
 
 const filterSimilarVectors = async (supabase, documentId, message) => {
