@@ -3,6 +3,12 @@ import { inference } from './inference';
 import { createClient } from '@supabase/supabase-js';
 
 export default function handler(req, res) {
+  if (res.socket.server.io) {
+    console.log('Socket already connected');
+    res.end();
+    return;
+  }
+
   const io = new Server(res.socket.server, {
     path: '/api/socket_io',
     addTrailingSlash: false
@@ -16,9 +22,11 @@ export default function handler(req, res) {
   }
 
   io.on('connection', (socket) => {
+    socket.on('disconnect', (reason) => console.error({ reason }));
+    socket.on('error', (error) => console.error({ error }));
+
     socket.on('message', async (data) => {
-      const parsed = JSON.parse(data);
-      const { message, documentId } = parsed;
+      const { message, documentId } = data;
 
       await saveChat(socket, supabase, {
         message,
@@ -26,10 +34,10 @@ export default function handler(req, res) {
         actor: 'human'
       });
 
-      inference({ documentId, question: parsed.message, supabase }).then(
+      inference({ documentId, question: message, supabase }).then(
         async ({ answer, error }) => {
           if (error) {
-            socket.emit('chat_error', JSON.stringify({ message: error }));
+            socket.emit('chat_error', error);
             return;
           }
           await saveChat(socket, supabase, {
@@ -37,7 +45,8 @@ export default function handler(req, res) {
             checksum: documentId,
             actor: 'ai'
           });
-          socket.emit('ai_message', JSON.stringify({ message: answer }));
+
+          socket.emit('ai_message', answer);
         }
       );
     });
@@ -91,5 +100,12 @@ const saveChat = async (socket, supabase, data) => {
     console.error(error);
     socket.emit('chat_error', JSON.stringify({ message: error }));
     return;
+  }
+};
+
+export const config = {
+  api: {
+    bodyParser: false,
+    responseLimit: false
   }
 };

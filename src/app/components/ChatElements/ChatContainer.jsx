@@ -9,7 +9,6 @@ import { Comment } from 'react-loader-spinner';
 import ChatHeader from './ChatHeader';
 import { Loader } from './Loader';
 import LogoCard from '../LogoCard';
-import TypingText from './TypingMessage';
 
 export default function ChatMessage() {
   const { activeChatId, socket, currentDocument } = useContext(ChatContext);
@@ -68,8 +67,27 @@ export default function ChatMessage() {
     chatRecords();
   }, [activeChatId, chatRecords]);
 
+  const errorEventListener = async (error) => {
+    console.error({ error });
+
+    setConversations((prev) => {
+      let temp = [...prev];
+      const popped = temp.pop();
+      if (popped.loader) {
+        return temp;
+      }
+
+      return prev;
+    });
+
+    toast.error('Cannot get the answer. Please try again later.', {
+      toastId: 'chat_error',
+      position: 'bottom-left'
+    });
+  };
+
   useEffect(() => {
-    socket?.on('ai_message', async (data) => {
+    socket?.on('ai_message', async (message) => {
       setConversations((prev) => {
         let temp = [...prev];
         temp.pop();
@@ -78,32 +96,15 @@ export default function ChatMessage() {
           ...temp,
           {
             user: 'ai',
-            message: (
-              <TypingText
-                setConversations={setConversations}
-                message={JSON.parse(data).message}
-              />
-            )
+            message
           }
         ];
       });
     });
 
-    socket?.on('chat_error', async (data) => {
-      console.error({ data });
-
-      setConversations((prev) => {
-        let temp = [...prev];
-        temp.pop();
-
-        return [...temp];
-      });
-
-      toast.error('Cannot send message. Please try again later.', {
-        toastId: 'chat_error',
-        position: 'bottom-left'
-      });
-    });
+    socket?.on('chat_error', errorEventListener);
+    socket?.on('error', errorEventListener);
+    socket?.on('disconnect', errorEventListener);
   }, [activeChatId, socket]);
 
   const getRowHeight = (idx) => {
@@ -111,13 +112,14 @@ export default function ChatMessage() {
   };
 
   const submitHandler = async () => {
-    socket?.emit(
-      'message',
-      JSON.stringify({
-        documentId: activeChatId,
-        message: userMessage
-      })
-    );
+    if (userMessage?.length === 0) {
+      return;
+    }
+
+    socket?.emit('message', {
+      documentId: activeChatId,
+      message: userMessage
+    });
 
     setUserMessage('');
     setConversations((prev) => {
@@ -129,6 +131,7 @@ export default function ChatMessage() {
         },
         {
           user: 'ai',
+          loader: true,
           message: (
             <Comment
               color="#ffffff"
