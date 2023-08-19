@@ -53,5 +53,11 @@ NEXT_PUBLIC_OPENAI_API_KEY=<openai_api_key>
 
 # Docker setup
 
-A [Dockerfile](Dockerfile) has been included in the project to make docker setup easier. Build the image and use the env variables/file to run the container
+The project includes a [Dockerfile](Dockerfile) to make the setup easier. Build the image and use the env variables/file to run the container
+
+```shell
+docker build -t <label>:<version> .
+
+docker run -p 3000:3000 --env-file .env <label>:<version>
+```
 
