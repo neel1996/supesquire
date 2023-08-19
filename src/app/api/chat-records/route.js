@@ -5,7 +5,7 @@ export const POST = async (req) => {
   const body = await req.json();
 
   const { data, error } = await supabase()
-    .from(process.env.SUPABASE_CHAT_RECORDS_TABLE)
+    .from(process.env.NEXT_PUBLIC_SUPABASE_CHAT_RECORDS_TABLE)
     .select('message, actor, created_at')
     .eq('checksum', body.checksum)
     .order('created_at', { ascending: true });

@@ -36,16 +36,16 @@ Supesquire is a `Next.js` application powered by OpenAI and supabase. It is well
 - Create a `.env.local` file in the root of the project and add the following environment variables
 
 ```
-SUPABASE_URL=<supabase_url>
-SUPABASE_API_KEY=<supabase_api_key>
-SUPABASE_BUCKET=<supabase_bucket>
-SUPABASE_DOCUMENTS_TABLE=<supabase_documents_table>
-SUPABASE_CHAT_RECORDS_TABLE=<supabase_chat_records_table>
+NEXT_PUBLIC_SUPABASE_URL=<supabase_url>
+NEXT_PUBLIC_SUPABASE_API_KEY=<supabase_api_key>
+NEXT_PUBLIC_SUPABASE_BUCKET=<supabase_bucket>
+NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE=<supabase_documents_table>
+NEXT_PUBLIC_SUPABASE_CHAT_RECORDS_TABLE=<supabase_chat_records_table>
 NEXT_PUBLIC_SUPABASE_URL=<supabase_url>
 NEXT_PUBLIC_SUPABASE_API_KEY=<supabase_api_key>
 NEXT_PUBLIC_SUPABASE_BUCKET=<supabase_bucket>
 
-OPENAI_API_KEY=<openai_api_key>
+NEXT_PUBLIC_OPENAI_API_KEY=<openai_api_key>
 ```
 
 - To start the application, run `yarn dev`

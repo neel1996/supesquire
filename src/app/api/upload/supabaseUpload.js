@@ -1,7 +1,7 @@
 import { supabase } from '../supabase';
 import { getChecksum } from './checksumGenerator';
 
-const bucket = process.env.SUPABASE_BUCKET;
+const bucket = process.env.NEXT_PUBLIC_SUPABASE_BUCKET;
 
 export const upload = async (file) => {
   const checksum = await getChecksum(file);

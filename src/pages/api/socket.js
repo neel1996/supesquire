@@ -71,8 +71,8 @@ const supabaseClient = (req) => {
       .trim();
 
     const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_API_KEY,
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_API_KEY,
       {
         global: {
           headers: {
@@ -91,14 +91,14 @@ const supabaseClient = (req) => {
 
 const saveChat = async (socket, supabase, data) => {
   const { error } = await supabase
-    .from(process.env.SUPABASE_CHAT_RECORDS_TABLE)
+    .from(process.env.NEXT_PUBLIC_SUPABASE_CHAT_RECORDS_TABLE)
     .insert({
       ...data
     });
 
   if (error) {
     console.error(error);
-    socket.emit('chat_error', JSON.stringify({ message: error }));
+    socket.emit('chat_error', error);
     return;
   }
 };

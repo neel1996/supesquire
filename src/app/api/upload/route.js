@@ -20,7 +20,7 @@ export const POST = async (req) => {
         error,
         count
       } = await supabase()
-        .from(process.env.SUPABASE_DOCUMENTS_TABLE)
+        .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
         .select('checksum', {
           count: 'exact'
         })
@@ -65,7 +65,7 @@ const saveDocument = async ({ fileName, checksum, docContent, chunks }) => {
   }
 
   const { error } = await supabase()
-    .from(process.env.SUPABASE_DOCUMENTS_TABLE)
+    .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
     .insert({
       checksum: checksum,
       document_name: fileName,
@@ -84,7 +84,7 @@ const saveDocument = async ({ fileName, checksum, docContent, chunks }) => {
     console.error(saveChunksError);
 
     await supabase()
-      .from(process.env.SUPABASE_DOCUMENTS_TABLE)
+      .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
       .delete({ count: 1 })
       .eq('checksum', checksum);
 
