@@ -50,7 +50,3 @@ OPENAI_API_KEY=<openai_api_key>
 
 - To start the application, run `yarn dev`
 
-## Demo
-
-https://github.com/neel1996/supesquire/assets/47709856/d3236a11-a320-4bd9-8612-5cf22656870d
-
