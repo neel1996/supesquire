@@ -77,7 +77,15 @@ export default function ChatItem({
               margin: '5px'
             }}
           >
-            {conversation.message}
+            {conversation?.loader ? (
+              <>{conversation.message}</>
+            ) : (
+              <>
+                {conversation.message?.split('\n').map((m) => {
+                  return <div key={m}>{m}</div>;
+                })}
+              </>
+            )}
           </Card>
         </Grid>
       </Grid>
