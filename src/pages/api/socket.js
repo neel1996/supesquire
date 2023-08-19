@@ -11,7 +11,8 @@ export default function handler(req, res) {
 
   const io = new Server(res.socket.server, {
     path: '/api/socket_io',
-    addTrailingSlash: false
+    addTrailingSlash: false,
+    pingTimeout: 60000,
   });
 
   res.socket.server.io = io;
