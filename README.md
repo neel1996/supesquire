@@ -20,7 +20,8 @@ Supesquire is a `Next.js` application powered by OpenAI and supabase. It is well
 - **langchain**: Extract textual content from the PDF document and generate tailored prompts for document questions & answering
 - **Next.js**: UI and Backend
 
-![Untitled presentation (2)](https://github.com/neel1996/supesquire/assets/47709856/361ae0f1-8a1d-4b19-a5c8-a0ff83873f93)
+![hld](https://github.com/neel1996/supesquire/assets/47709856/d799e2df-365d-43ce-a069-dab74052a615)
+
 
 # Supabase setup
 
@@ -49,4 +50,8 @@ NEXT_PUBLIC_OPENAI_API_KEY=<openai_api_key>
 ```
 
 - To start the application, run `yarn dev`
+
+# Docker setup
+
+A [Dockerfile](Dockerfile) has been included in the project to make docker setup easier. Build the image and use the env variables/file to run the container
 
