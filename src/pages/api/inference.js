@@ -22,14 +22,16 @@ export const inference = async ({ documentId, question, supabase }) => {
 
   const docs = [
     new Document({
-      pageContent: content
+      pageContent: content.slice(0, 6000)
     })
   ];
 
   const { text, aiError } = await chain
     .call({
       input_documents: docs,
-      question
+      question:
+        question +
+        'The answer should be within 900 characters and should not exceed it'
     })
     .catch((error) => {
       console.error({ error });
