@@ -6,9 +6,6 @@ supesquire
 <p align="center">
 <img src="https://github.com/neel1996/supesquire/assets/47709856/2b97f1e7-6ec1-41e1-b3af-d73e1c48b4b4" alt="logo" style="text-align:center;" />
 </p>
-<p align="center">
-chat with your documents
-</p>
 </div>
 
 # Overview
