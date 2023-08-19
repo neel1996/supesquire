@@ -143,12 +143,3 @@ const saveDocumentChunks = async (checksum, chunks) => {
 
   return { error: null };
 };
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb'
-    },
-    responseLimit: '1mb'
-  }
-};
