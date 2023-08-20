@@ -43,7 +43,8 @@ export default function ChatMessage() {
             ...data.map((item) => {
               return {
                 user: item.actor,
-                message: item.message
+                message: item.message,
+                created_at: item.created_at
               };
             })
           ];
@@ -96,7 +97,8 @@ export default function ChatMessage() {
           ...temp,
           {
             user: 'ai',
-            message
+            message,
+            created_at: new Date().toString()
           }
         ];
       });
@@ -108,7 +110,7 @@ export default function ChatMessage() {
   }, [activeChatId, socket]);
 
   const getRowHeight = (idx) => {
-    return rowHeights.current[idx] + 20 || 80;
+    return rowHeights.current[idx] + 30 || 100;
   };
 
   const submitHandler = async () => {
@@ -127,7 +129,8 @@ export default function ChatMessage() {
         ...prev,
         {
           user: 'human',
-          message: userMessage
+          message: userMessage,
+          created_at: new Date().toString()
         },
         {
           user: 'ai',

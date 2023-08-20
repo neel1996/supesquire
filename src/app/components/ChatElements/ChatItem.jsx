@@ -1,6 +1,7 @@
 import { Face6, SmartToy } from '@mui/icons-material';
-import { Card, Grid, Icon, ListItem } from '@mui/material';
+import { Box, Card, Grid, Icon, ListItem, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
+import format from 'date-fns/format';
 
 export default function ChatItem({
   rowPosition,
@@ -33,6 +34,40 @@ export default function ChatItem({
     rowHeights.current[rowPosition] = rowRef.current.clientHeight;
     listRef.current.resetAfterIndex(0);
   }, [rowRef, rowHeights, listRef, rowPosition]);
+
+  const TimeStamp = ({ conversation }) => {
+    let formattedTimestamp;
+    try {
+      formattedTimestamp = format(
+        new Date(conversation.created_at),
+        'dd MMM y, hh:mm aaa'
+      );
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'right',
+          marginTop: '5px'
+        }}
+      >
+        <Typography
+          variant="subtitle1"
+          sx={{
+            fontSize: '10px',
+            color: '#a8adb2',
+            fontWeight: '500'
+          }}
+        >
+          {formattedTimestamp}
+        </Typography>
+      </Box>
+    );
+  };
 
   return (
     <ListItem
@@ -85,6 +120,9 @@ export default function ChatItem({
                   return <div key={m}>{m}</div>;
                 })}
               </>
+            )}
+            {conversation.created_at && (
+              <TimeStamp conversation={conversation} />
             )}
           </Card>
         </Grid>

@@ -12,7 +12,7 @@ export default function handler(req, res) {
   const io = new Server(res.socket.server, {
     path: '/api/socket_io',
     addTrailingSlash: false,
-    pingTimeout: 60000,
+    pingTimeout: 60000
   });
 
   res.socket.server.io = io;
@@ -29,11 +29,12 @@ export default function handler(req, res) {
     socket.on('message', async (data) => {
       const { message, documentId } = data;
 
-      await saveChat(socket, supabase, {
+      const { error } = await saveChat(socket, supabase, {
         message,
         checksum: documentId,
         actor: 'human'
       });
+      if (error) return;
 
       inference({ documentId, question: message, supabase }).then(
         async ({ answer, error }) => {
@@ -41,11 +42,13 @@ export default function handler(req, res) {
             socket.emit('chat_error', error);
             return;
           }
-          await saveChat(socket, supabase, {
+
+          const { error: saveError } = await saveChat(socket, supabase, {
             message: answer,
             checksum: documentId,
             actor: 'ai'
           });
+          if (saveError) return;
 
           socket.emit('ai_message', answer);
         }
@@ -90,18 +93,20 @@ const supabaseClient = (req) => {
   }
 };
 
-const saveChat = async (socket, supabase, data) => {
+const saveChat = async (socket, supabase, chatRecord) => {
   const { error } = await supabase
     .from(process.env.NEXT_PUBLIC_SUPABASE_CHAT_RECORDS_TABLE)
     .insert({
-      ...data
+      ...chatRecord
     });
 
   if (error) {
     console.error(error);
     socket.emit('chat_error', error);
-    return;
+    return { error };
   }
+
+  return { error: null };
 };
 
 export const config = {
