@@ -148,3 +148,5 @@ const saveDocumentChunks = async (checksum, chunks) => {
 
   return { error: null };
 };
+
+export const runtime = 'nodejs';
