@@ -11,7 +11,7 @@ import { Loader } from './Loader';
 import LogoCard from '../LogoCard';
 
 export default function ChatMessage() {
-  const { activeChatId, socket, currentDocument } = useContext(ChatContext);
+  const { activeChatId, currentDocument, supabase } = useContext(ChatContext);
 
   const [conversations, setConversations] = useState([]);
   const [userMessage, setUserMessage] = useState('');
@@ -20,10 +20,16 @@ export default function ChatMessage() {
   const listRef = useRef(null);
   const rowHeights = useRef({});
 
+  const channel = supabase?.channel(activeChatId);
+
   const scrollToBottom = useCallback(
     () => listRef?.current?.scrollToItem(conversations.length, 'end'),
     [conversations]
   );
+
+  const getRowHeight = (idx) => {
+    return rowHeights.current[idx] + 30 || 100;
+  };
 
   const chatRecords = useCallback(async () => {
     setLoading(true);
@@ -88,39 +94,37 @@ export default function ChatMessage() {
   };
 
   useEffect(() => {
-    socket?.on('ai_message', async (message) => {
-      setConversations((prev) => {
-        let temp = [...prev];
-        temp.pop();
+    channel
+      .on('broadcast', { event: 'ai_message' }, ({ payload }) => {
+        setConversations((prev) => {
+          let temp = [...prev];
+          temp.pop();
 
-        return [
-          ...temp,
-          {
-            user: 'ai',
-            message,
-            created_at: new Date().toString()
-          }
-        ];
-      });
-    });
-
-    socket?.on('chat_error', errorEventListener);
-    socket?.on('error', errorEventListener);
-    socket?.on('disconnect', errorEventListener);
-  }, [activeChatId, socket]);
-
-  const getRowHeight = (idx) => {
-    return rowHeights.current[idx] + 30 || 100;
-  };
+          return [
+            ...temp,
+            {
+              user: 'ai',
+              message: payload?.message,
+              created_at: new Date().toString()
+            }
+          ];
+        });
+      })
+      .on('broadcast', { event: 'chat_error' }, errorEventListener)
+      .subscribe();
+  }, [channel]);
 
   const submitHandler = async () => {
     if (userMessage?.length === 0) {
       return;
     }
 
-    socket?.emit('message', {
-      documentId: activeChatId,
-      message: userMessage
+    fetch('/api/inference', {
+      method: 'POST',
+      body: JSON.stringify({
+        message: userMessage,
+        documentId: activeChatId
+      })
     });
 
     setUserMessage('');

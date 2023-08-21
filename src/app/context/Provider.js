@@ -8,7 +8,6 @@ import { toast } from 'react-toastify';
 export default function ChatProvider({ children }) {
   const [activeChatId, setActiveChatId] = useState(null);
   const [currentDocument, setCurrentDocument] = useState(null);
-  const [socket, setSocket] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [conversationHistory, setConversationHistory] = useState(null);
   const [openDraw, setOpenDraw] = useState(false);
@@ -85,8 +84,6 @@ export default function ChatProvider({ children }) {
       value={{
         activeChatId,
         setActiveChatId,
-        socket,
-        setSocket,
         conversationHistory,
         setConversationHistory,
         currentDocument,
