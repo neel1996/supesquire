@@ -125,20 +125,25 @@ const documentTitle = async (content) => {
 const saveDocumentChunks = async (checksum, chunks) => {
   const { content, embeddings } = chunks;
 
+  let promises = [];
   for (let i = 0; i < content.length; i++) {
-    const { error } = await supabase()
-      .from('document_chunks')
-      .insert({
-        document_checksum: checksum,
-        chunk_number: i + 1,
-        chunk_content: SqlString.escape(content[i]),
-        chunk_embedding: embeddings[i]
-      });
+    promises.push(
+      supabase()
+        .from('document_chunks')
+        .insert({
+          document_checksum: checksum,
+          chunk_number: i + 1,
+          chunk_content: SqlString.escape(content[i]),
+          chunk_embedding: embeddings[i]
+        })
+    );
+  }
 
-    if (error) {
-      console.error({ error });
-      return { error };
-    }
+  // eslint-disable-next-line no-undef
+  const { error } = await Promise.all(promises);
+  if (error) {
+    console.error(error);
+    return { error };
   }
 
   return { error: null };
