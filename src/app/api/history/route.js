@@ -5,7 +5,7 @@ import { supabase } from '../supabase';
 export const GET = async () => {
   const { data: documents, error } = await supabase()
     .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
-    .select('checksum, document_name, title, content');
+    .select('checksum, document_name, title');
 
   if (error) {
     console.error(error);

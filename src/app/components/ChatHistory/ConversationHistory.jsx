@@ -1,24 +1,12 @@
 import React, { useContext } from 'react';
 
 import { ChatContext } from '@/app/context/Context';
-import { HistoryEdu } from '@mui/icons-material';
-import {
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Tooltip,
-  Typography
-} from '@mui/material';
+import { ListItem, ListItemText, Typography } from '@mui/material';
+
+import HistoryListItem from './HistoryListItem';
 
 export default function ConversationHistory() {
-  const {
-    conversationHistory,
-    activeChatId,
-    setActiveChatId,
-    setCurrentDocument,
-    setOpenDraw
-  } = useContext(ChatContext);
+  const { conversationHistory, activeChatId } = useContext(ChatContext);
 
   return (
     <>
@@ -42,54 +30,12 @@ export default function ConversationHistory() {
           </ListItemText>
         </ListItem>
       )}
-      {conversationHistory.map((conversation, idx) => (
-        <ListItem disablePadding key={`${conversation + idx}`}>
-          <ListItemButton
-            sx={{
-              padding: '15px 10px',
-              background:
-                conversation.checksum === activeChatId ? '#7f8cd4' : '#313338',
-              color: '#ffffff',
-              borderRadius: '1px',
-              fontSize: '12px',
-              '&:hover': {
-                background: '#7f8cd4'
-              }
-            }}
-            onClick={() => {
-              setActiveChatId(conversation.checksum);
-              setCurrentDocument({
-                title: conversation.title,
-                id: conversation.checksum,
-                fileName: conversation.document_name,
-                content: conversation.content
-              });
-              setOpenDraw(false);
-            }}
-          >
-            <ListItemIcon>
-              <HistoryEdu
-                sx={{
-                  color: '#ffffff'
-                }}
-              />
-            </ListItemIcon>
-            <ListItemText>
-              <Tooltip title={conversation.title} placement="right-end">
-                <Typography
-                  sx={{
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    width: '90%'
-                  }}
-                >
-                  {conversation.title}
-                </Typography>
-              </Tooltip>
-            </ListItemText>
-          </ListItemButton>
-        </ListItem>
+      {conversationHistory.map((conversation) => (
+        <HistoryListItem
+          conversation={conversation}
+          isActive={activeChatId === conversation.checksum}
+          key={conversation.checksum}
+        />
       ))}
     </>
   );
