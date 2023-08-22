@@ -1,6 +1,7 @@
-import { Box, Card } from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
+
+import { Box, Card } from '@mui/material';
 
 export default function LogoCard() {
   return (

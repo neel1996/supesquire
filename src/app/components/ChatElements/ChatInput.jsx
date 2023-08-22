@@ -1,6 +1,7 @@
+import React from 'react';
+
 import { KeyboardArrowRight, Send } from '@mui/icons-material';
 import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
-import React from 'react';
 
 export default function ChatInput({ userMessage, setUserMessage }) {
   return (

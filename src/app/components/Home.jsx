@@ -1,13 +1,15 @@
 'use client';
 
-import { Box, Grid } from '@mui/material';
-import History from './History';
-import Hero from './Hero';
 import { useContext } from 'react';
+
+import { Box, Grid } from '@mui/material';
+
 import { ChatContext } from '../context/Context';
 import ChatContainer from './ChatElements/ChatContainer';
+import History from './ChatHistory/History';
+import MobileHistoryView from './ChatHistory/MobileHistoryView';
 import Login from './Login/Login';
-import MobileHistoryView from './MobileHistoryView';
+import Hero from './Upload/Hero';
 
 export default function Home() {
   const { activeChatId, isLoggedIn } = useContext(ChatContext);

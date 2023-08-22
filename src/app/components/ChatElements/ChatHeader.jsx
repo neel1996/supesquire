@@ -1,7 +1,8 @@
+import { useContext } from 'react';
+
 import { ChatContext } from '@/app/context/Context';
 import { Download, PictureAsPdf } from '@mui/icons-material';
 import { Grid, IconButton, Stack, Typography } from '@mui/material';
-import { useContext } from 'react';
 
 export default function ChatHeader() {
   const { currentDocument, supabase } = useContext(ChatContext);

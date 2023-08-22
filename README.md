@@ -22,7 +22,6 @@ Supesquire is a `Next.js` application powered by OpenAI and supabase. It is well
 
 ![hld](https://github.com/neel1996/supesquire/assets/47709856/d799e2df-365d-43ce-a069-dab74052a615)
 
-
 # Supabase setup
 
 - Create a supabase project
@@ -60,4 +59,3 @@ docker build -t <label>:<version> .
 
 docker run -p 3000:3000 --env-file .env <label>:<version>
 ```
-

@@ -1,5 +1,6 @@
-import { Grid } from '@mui/material';
 import { Dna } from 'react-loader-spinner';
+
+import { Grid } from '@mui/material';
 
 export const Loader = () => {
   return (

@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChatContext } from './Context';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { toast } from 'react-toastify';
+
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+import { ChatContext } from './Context';
 
 export default function ChatProvider({ children }) {
   const [activeChatId, setActiveChatId] = useState(null);

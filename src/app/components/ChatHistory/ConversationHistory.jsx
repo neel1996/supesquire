@@ -1,3 +1,7 @@
+import React, { useContext } from 'react';
+
+import { ChatContext } from '@/app/context/Context';
+import { HistoryEdu } from '@mui/icons-material';
 import {
   ListItem,
   ListItemButton,
@@ -6,9 +10,6 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import React, { useContext } from 'react';
-import { ChatContext } from '../context/Context';
-import { HistoryEdu } from '@mui/icons-material';
 
 export default function ConversationHistory() {
   const {

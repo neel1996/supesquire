@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+
+import { ChatContext } from '@/app/context/Context';
 import { AddBox, HistoryOutlined } from '@mui/icons-material';
 import {
   Box,
@@ -8,8 +11,7 @@ import {
   Stack,
   Typography
 } from '@mui/material';
-import { useContext } from 'react';
-import { ChatContext } from '../context/Context';
+
 import ConversationHistory from './ConversationHistory';
 
 export default function History() {

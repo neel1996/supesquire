@@ -1,6 +1,8 @@
+import React, { useContext } from 'react';
+
 import { ChatContext } from '@/app/context/Context';
 import { Box, Button, InputAdornment, Stack, TextField } from '@mui/material';
-import React, { useContext } from 'react';
+
 import MobileHeader from './MobileHeader';
 
 export default function LoginInputs({ inputData, credentials }) {

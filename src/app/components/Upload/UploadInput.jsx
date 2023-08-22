@@ -1,6 +1,8 @@
-import { Typography } from '@mui/material';
 import React from 'react';
-import LogoCard from './LogoCard';
+
+import { Typography } from '@mui/material';
+
+import LogoCard from '../LogoCard';
 
 export default function UploadInput({ getInputProps }) {
   return (

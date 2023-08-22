@@ -1,8 +1,9 @@
-import { Document } from 'langchain/document';
 import { loadQAStuffChain } from 'langchain/chains';
+import { Document } from 'langchain/document';
 import { PromptTemplate } from 'langchain/prompts';
-import { filterSimilarVectors } from './vectorSearch';
+
 import { llm } from '../openai';
+import { filterSimilarVectors } from './vectorSearch';
 
 export const infer = async ({ documentId, question }) => {
   const { content, error } = await filterSimilarVectors(documentId, question);

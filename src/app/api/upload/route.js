@@ -1,11 +1,12 @@
-import { upload } from './supabaseUpload';
-import { NextResponse } from 'next/server';
-import { extractDocumentContent } from './documentHandler';
 import { loadQAChain } from 'langchain/chains';
 import { Document } from 'langchain/document';
+import { NextResponse } from 'next/server';
 import SqlString from 'sqlstring';
-import { supabase } from '../supabase';
+
 import { llm } from '../openai';
+import { supabase } from '../supabase';
+import { extractDocumentContent } from './documentHandler';
+import { upload } from './supabaseUpload';
 
 export const POST = async (req) => {
   const form = await req.formData();

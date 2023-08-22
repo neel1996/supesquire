@@ -1,14 +1,16 @@
-import { Alert, Grid, Typography } from '@mui/material';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import ChatItem from './ChatItem';
-import ChatInput from './ChatInput';
-import { VariableSizeList as List } from 'react-window';
-import { ChatContext } from '@/app/context/Context';
-import { toast } from 'react-toastify';
 import { Comment } from 'react-loader-spinner';
-import ChatHeader from './ChatHeader';
-import { Loader } from './Loader';
+import { toast } from 'react-toastify';
+import { VariableSizeList as List } from 'react-window';
+
+import { ChatContext } from '@/app/context/Context';
+import { Alert, Grid, Typography } from '@mui/material';
+
 import LogoCard from '../LogoCard';
+import ChatHeader from './ChatHeader';
+import ChatInput from './ChatInput';
+import ChatItem from './ChatItem';
+import { Loader } from './Loader';
 
 export default function ChatMessage() {
   const { activeChatId, currentDocument, supabase } = useContext(ChatContext);

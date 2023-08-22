@@ -1,5 +1,7 @@
-import { Grid, Stack, Typography } from '@mui/material';
 import React from 'react';
+
+import { Grid, Stack, Typography } from '@mui/material';
+
 import LogoCard from '../LogoCard';
 
 export default function MobileHeader() {

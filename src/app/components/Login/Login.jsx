@@ -1,11 +1,13 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+
 import { AlternateEmail, Key } from '@mui/icons-material';
 import { Grid } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
-import LoginInputs from './LoginInputs';
+
 import Hero from './Hero';
 import Loader from './Loader';
+import LoginInputs from './LoginInputs';
 
 export default function Login() {
   const isFirstRender = useRef(true);

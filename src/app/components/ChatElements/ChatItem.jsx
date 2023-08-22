@@ -1,7 +1,8 @@
+import format from 'date-fns/format';
+import React, { useEffect } from 'react';
+
 import { Face6, SmartToy } from '@mui/icons-material';
 import { Box, Card, Grid, Icon, ListItem, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
-import format from 'date-fns/format';
 
 export default function ChatItem({
   rowPosition,

@@ -1,5 +1,7 @@
-import { Stack, Typography } from '@mui/material';
 import React from 'react';
+
+import { Stack, Typography } from '@mui/material';
+
 import LogoCard from '../LogoCard';
 
 export default function Hero() {

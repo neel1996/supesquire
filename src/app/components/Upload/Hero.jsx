@@ -1,15 +1,17 @@
 'use client';
 
+import axios from 'axios';
+import { useCallback, useContext, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { toast } from 'react-toastify';
+
 import { CloudUpload, UploadFileRounded } from '@mui/icons-material';
 import { Box, Grid, Stack, Typography } from '@mui/material';
-import { useDropzone } from 'react-dropzone';
-import axios from 'axios';
-import { useContext, useCallback, useState } from 'react';
-import { ChatContext } from '../context/Context';
+
+import { ChatContext } from '../../context/Context';
 import FeatureCards from './FeatureCards';
-import UploadInput from './UploadInput';
 import Loader from './Loader';
-import { toast } from 'react-toastify';
+import UploadInput from './UploadInput';
 
 export default function Hero() {
   const { setActiveChatId, setCurrentDocument } = useContext(ChatContext);

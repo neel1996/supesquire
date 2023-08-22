@@ -1,6 +1,7 @@
 import { PDFLoader } from 'langchain/document_loaders/fs/pdf';
 import { CharacterTextSplitter } from 'langchain/text_splitter';
 import { MemoryVectorStore } from 'langchain/vectorstores/memory';
+
 import { openAIEmbedding } from '../openai';
 
 export const extractDocumentContent = async (file) => {

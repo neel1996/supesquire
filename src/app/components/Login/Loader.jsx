@@ -1,5 +1,6 @@
-import { Backdrop } from '@mui/material';
 import { Dna } from 'react-loader-spinner';
+
+import { Backdrop } from '@mui/material';
 
 export default function Loader() {
   return (

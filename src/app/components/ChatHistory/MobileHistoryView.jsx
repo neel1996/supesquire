@@ -1,8 +1,10 @@
+import React, { useContext } from 'react';
+
 import { KeyboardArrowUp } from '@mui/icons-material';
 import { Box, Drawer, Fab } from '@mui/material';
-import React, { useContext } from 'react';
+
+import { ChatContext } from '../../context/Context';
 import History from './History';
-import { ChatContext } from '../context/Context';
 
 export default function MobileHistoryView() {
   const { openDraw, setOpenDraw } = useContext(ChatContext);

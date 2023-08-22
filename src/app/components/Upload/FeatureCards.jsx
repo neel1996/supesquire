@@ -1,6 +1,7 @@
-import { MarkChatRead, History } from '@mui/icons-material';
-import { Box, Icon, Typography } from '@mui/material';
 import React from 'react';
+
+import { History, MarkChatRead } from '@mui/icons-material';
+import { Box, Icon, Typography } from '@mui/material';
 
 export default function FeatureCards() {
   const features = [
