@@ -42,8 +42,8 @@ export default function ConversationHistory() {
           </ListItemText>
         </ListItem>
       )}
-      {conversationHistory.map((conversation) => (
-        <ListItem disablePadding key={conversation.id}>
+      {conversationHistory.map((conversation, idx) => (
+        <ListItem disablePadding key={`${conversation + idx}`}>
           <ListItemButton
             sx={{
               padding: '15px 10px',

@@ -24,6 +24,7 @@ export default function ChatInput({ userMessage, setUserMessage }) {
       }}
     >
       <Grid
+        item
         xl={11}
         sm={11}
         xs={10}
@@ -64,6 +65,7 @@ export default function ChatInput({ userMessage, setUserMessage }) {
         />
       </Grid>
       <Grid
+        item
         xl={1}
         sm={1}
         xs={2}

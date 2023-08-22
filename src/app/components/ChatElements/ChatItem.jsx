@@ -117,8 +117,8 @@ export default function ChatItem({
               <>{conversation.message}</>
             ) : (
               <>
-                {conversation.message?.split('\n').map((m) => {
-                  return <div key={m}>{m}</div>;
+                {conversation.message?.split('\n').map((m, idx) => {
+                  return <div key={m + idx}>{m}</div>;
                 })}
               </>
             )}

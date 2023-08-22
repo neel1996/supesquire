@@ -19,7 +19,7 @@ export default function Home() {
       {!isLoggedIn ? (
         <Login />
       ) : (
-        <Grid container xs={12}>
+        <Grid container>
           <Grid item xl={3} lg={3} md={4}>
             <Box
               display={{
