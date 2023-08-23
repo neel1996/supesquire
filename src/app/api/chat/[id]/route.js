@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { supabase } from '../../supabase';
 
 export const DELETE = async (_, { params: { id } }) => {
-  const { data, error } = await supabase()
+  const { error } = await supabase()
     .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
     .delete()
     .eq('checksum', id?.toString());
