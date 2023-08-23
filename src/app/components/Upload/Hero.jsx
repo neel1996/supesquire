@@ -1,6 +1,5 @@
 'use client';
 
-import axios from 'axios';
 import { useCallback, useContext, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
@@ -12,13 +11,15 @@ import { ChatContext } from '../../context/Context';
 import FeatureCards from './FeatureCards';
 import Loader from './Loader';
 import UploadInput from './UploadInput';
+import { generateChecksum } from './checksum';
 
 export default function Hero() {
-  const { setActiveChatId, setCurrentDocument } = useContext(ChatContext);
+  const { setActiveChatId, setCurrentDocument, supabase } =
+    useContext(ChatContext);
   const [loading, setLoading] = useState(false);
 
   const onDrop = useCallback(
-    (acceptedFiles) => {
+    async (acceptedFiles) => {
       if (acceptedFiles.length === 0) {
         toast.error('Please upload a pdf file', {
           position: 'bottom-left',
@@ -28,18 +29,30 @@ export default function Hero() {
         return;
       }
 
-      const formData = new FormData();
-      formData.append('file', acceptedFiles[0]);
-
       setLoading(true);
-      axios({
-        method: 'post',
-        url: '/api/upload',
-        data: formData
-      })
-        .then((response) => {
+
+      const file = acceptedFiles[0];
+      const checksum = await generateChecksum(file);
+
+      supabase.storage
+        .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET)
+        .upload(`${checksum}.pdf`, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: 'application/pdf'
+        })
+        .then(async () => {
+          const res = await fetch('/api/process-document', {
+            method: 'POST',
+            body: JSON.stringify({ checksum, fileName: file.name })
+          });
+          if (!res.ok) {
+            throw new Error('Error processing document');
+          }
+
+          const { title, fileName, content } = await res.json();
+
           setLoading(false);
-          const { checksum, title, fileName, content } = response.data;
           setActiveChatId(checksum);
           setCurrentDocument({
             title,
@@ -52,14 +65,14 @@ export default function Hero() {
           setLoading(false);
           console.error(error);
 
-          toast.error('Error uploading file', {
+          toast.error(error.toString(), {
             position: 'bottom-left',
             autoClose: 3000,
             toastId: 'upload_error'
           });
         });
     },
-    [setActiveChatId, setLoading, setCurrentDocument]
+    [supabase, setActiveChatId, setCurrentDocument]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

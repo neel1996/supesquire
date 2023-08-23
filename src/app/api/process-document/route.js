@@ -6,49 +6,47 @@ import SqlString from 'sqlstring';
 import { llm } from '../openai';
 import { supabase } from '../supabase';
 import { extractDocumentContent } from './documentHandler';
-import { upload } from './supabaseUpload';
+import { download } from './supabaseDownload';
 
 export const POST = async (req) => {
-  const form = await req.formData();
-  const file = form.get('file');
+  const { checksum, fileName } = await req.json();
+
+  const { file, error } = await download(`${checksum}.pdf`);
+  if (error) {
+    console.error(error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
 
   const { content, chunks } = await extractDocumentContent(file);
 
-  return await upload(file)
-    .then(async (res) => {
-      const {
-        data: documentData,
-        error,
-        count
-      } = await supabase()
-        .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
-        .select('checksum', {
-          count: 'exact'
-        })
-        .eq('checksum', res.checksum);
-
-      if (error) {
-        console.error(error);
-        return NextResponse.json({ error }, { status: 500 });
-      }
-
-      const newDocumentPayload = {
-        fileName: file.name,
-        checksum: res.checksum,
-        docContent: content,
-        chunks
-      };
-
-      if (count) {
-        return NextResponse.json({ status: 200, ...documentData?.[0] });
-      }
-
-      return await saveDocument(newDocumentPayload);
+  const {
+    data: documentData,
+    error: selectError,
+    count
+  } = await supabase()
+    .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
+    .select('checksum', {
+      count: 'exact'
     })
-    .catch((error) => {
-      console.error(error);
-      return NextResponse.json({ error }, { status: 500 });
-    });
+    .eq('checksum', checksum);
+
+  if (selectError) {
+    console.error(error);
+    return NextResponse.json({ error: selectError }, { status: 500 });
+  }
+
+  const newDocumentPayload = {
+    fileName,
+    checksum,
+    docContent: content,
+    chunks
+  };
+
+  if (count) {
+    return NextResponse.json({ ...documentData[0] }, { status: 200 });
+  }
+
+  return await saveDocument(newDocumentPayload);
 };
 
 const saveDocument = async ({ fileName, checksum, docContent, chunks }) => {
@@ -117,7 +115,7 @@ const documentTitle = async (content) => {
       })
     ],
     question:
-      'What is the title of this document?\nRespond only the title and nothing else\nDo not include any quotations or a prefix in the title'
+      'What is the title of this document?\nRespond only the title and nothing else\nDo not include any quotations or a prefix in the title\nThe title should not be more than 10 words long'
   });
 
   return text;
