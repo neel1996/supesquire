@@ -4,6 +4,8 @@ import React, { useEffect } from 'react';
 import { Face6, SmartToy } from '@mui/icons-material';
 import { Box, Card, Grid, Icon, ListItem, Typography } from '@mui/material';
 
+import CodeBlock from './CodeBlock';
+
 export default function ChatItem({
   rowPosition,
   style,
@@ -116,11 +118,7 @@ export default function ChatItem({
             {conversation?.loader ? (
               <>{conversation.message}</>
             ) : (
-              <>
-                {conversation.message?.split('\n').map((m, idx) => {
-                  return <div key={m + idx}>{m}</div>;
-                })}
-              </>
+              <>{<CodeBlock message={conversation.message} />}</>
             )}
             {conversation.created_at && (
               <TimeStamp conversation={conversation} />
