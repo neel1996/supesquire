@@ -11,12 +11,6 @@ import { download } from './supabaseDownload';
 export const POST = async (req) => {
   const { checksum, fileName } = await req.json();
 
-  const { file, error } = await download(`${checksum}.pdf`);
-  if (error) {
-    console.error(error);
-    return NextResponse.json({ error }, { status: 500 });
-  }
-
   const { data, error: fetchError } = await fetchDocument({ checksum });
   if (fetchError) {
     console.error(error);
@@ -27,9 +21,18 @@ export const POST = async (req) => {
     return NextResponse.json({ ...data }, { status: 200 });
   }
 
+  const { file, error } = await download(`${checksum}.pdf`);
+  if (error) {
+    console.error(error);
+    return NextResponse.json({ error }, { status: 500 });
+  }
+
   const channel = supabase().channel(`upload:${checksum}`);
   channel.subscribe((status) => {
     console.log({ status });
+    if (status in ['TIMED_OUT', 'CLOSED', 'CHANNEL_ERROR']) {
+      sendError(channel, status);
+    }
   });
   sendProgress(channel, 'Processing document...');
 
@@ -60,13 +63,7 @@ const processDocumentInBackground = async ({
   });
 
   if (error) {
-    channel.send({
-      type: 'broadcast',
-      event: 'upload:error',
-      payload: {
-        error
-      }
-    });
+    sendError(channel, error);
     return;
   }
 
@@ -106,6 +103,16 @@ const sendProgress = (channel, message) => {
     event: 'upload:progress',
     payload: {
       message
+    }
+  });
+};
+
+const sendError = (channel, error) => {
+  channel.send({
+    type: 'broadcast',
+    event: 'upload:error',
+    payload: {
+      error
     }
   });
 };
