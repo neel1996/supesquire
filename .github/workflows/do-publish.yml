@@ -39,4 +39,5 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
       - name: Push image
         run: |
+          doctl registry login
           docker push ${{ env.IMAGE_TAG_PREFIX }}:latest
