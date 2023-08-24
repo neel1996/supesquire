@@ -1,11 +1,11 @@
 import { loadQAChain } from 'langchain/chains';
 import { Document } from 'langchain/document';
 import { NextResponse } from 'next/server';
-import SqlString from 'sqlstring';
 
 import { llm } from '../openai';
 import { supabase } from '../supabase';
-import { extractDocumentContent } from './documentHandler';
+import { fetchDocument, saveDocument } from './database';
+import { extractDocumentContent } from './documentProcessor';
 import { download } from './supabaseDownload';
 
 export const POST = async (req) => {
@@ -17,89 +17,68 @@ export const POST = async (req) => {
     return NextResponse.json({ error }, { status: 500 });
   }
 
-  const { content, chunks } = await extractDocumentContent(file);
-
-  const {
-    data: documentData,
-    error: selectError,
-    count
-  } = await supabase()
-    .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
-    .select('checksum', {
-      count: 'exact'
-    })
-    .eq('checksum', checksum);
-
-  if (selectError) {
+  const { data, error: fetchError } = await fetchDocument({ checksum });
+  if (fetchError) {
     console.error(error);
-    return NextResponse.json({ error: selectError }, { status: 500 });
+    return NextResponse.json({ error: fetchError }, { status: 500 });
   }
 
-  const newDocumentPayload = {
+  if (data) {
+    return NextResponse.json({ ...data }, { status: 200 });
+  }
+
+  const channel = supabase().channel(`upload:${checksum}`);
+  channel.subscribe((status) => {
+    console.log({ status });
+  });
+  sendProgress(channel, 'Processing document...');
+
+  processDocumentInBackground({ channel, file, fileName, checksum });
+
+  return NextResponse.json({}, { status: 201 });
+};
+
+const processDocumentInBackground = async ({
+  channel,
+  file,
+  fileName,
+  checksum
+}) => {
+  sendProgress(channel, 'Extracting document content...');
+  const { content, chunks } = await extractDocumentContent(file);
+
+  sendProgress(channel, 'Saving document...');
+  const title = await documentTitle(content);
+
+  sendProgress(channel, 'Saving document details...');
+  const { data, error } = await saveDocument({
     fileName,
     checksum,
     docContent: content,
-    chunks
-  };
-
-  if (count) {
-    return NextResponse.json({ ...documentData[0] }, { status: 200 });
-  }
-
-  return await saveDocument(newDocumentPayload);
-};
-
-const saveDocument = async ({ fileName, checksum, docContent, chunks }) => {
-  const title = await documentTitle(docContent);
-
-  const { data: object, error: objectError } = await supabase()
-    .schema('storage')
-    .from('objects')
-    .select('id')
-    .eq('name', `${checksum}.pdf`);
-
-  if (objectError || object?.length === 0) {
-    console.error("Couldn't find object in storage.objects: ", objectError);
-    return NextResponse.json({ error: objectError }, { status: 500 });
-  }
-
-  const { error } = await supabase()
-    .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
-    .insert({
-      checksum: checksum,
-      document_name: fileName,
-      content: SqlString.escape(docContent),
-      title: title,
-      uploaded_object_id: object[0].id
-    });
+    chunks,
+    title
+  });
 
   if (error) {
-    console.error(error);
-    return NextResponse.json({ error }, { status: 500 });
+    channel.send({
+      type: 'broadcast',
+      event: 'upload:error',
+      payload: {
+        error
+      }
+    });
+    return;
   }
 
-  const { error: saveChunksError } = await saveDocumentChunks(checksum, chunks);
-  if (saveChunksError) {
-    console.error(saveChunksError);
-
-    await supabase()
-      .from(process.env.NEXT_PUBLIC_SUPABASE_DOCUMENTS_TABLE)
-      .delete({ count: 1 })
-      .eq('checksum', checksum);
-
-    return NextResponse.json({ error: saveChunksError }, { status: 500 });
-  }
-
-  return NextResponse.json(
-    {
-      checksum,
-      title,
-      fileName
-    },
-    {
-      status: 200
+  channel.send({
+    type: 'broadcast',
+    event: 'upload:complete',
+    payload: {
+      ...data
     }
-  );
+  });
+
+  return;
 };
 
 const documentTitle = async (content) => {
@@ -121,31 +100,12 @@ const documentTitle = async (content) => {
   return text;
 };
 
-const saveDocumentChunks = async (checksum, chunks) => {
-  const { content, embeddings } = chunks;
-
-  let promises = [];
-  for (let i = 0; i < content.length; i++) {
-    promises.push(
-      supabase()
-        .from('document_chunks')
-        .insert({
-          document_checksum: checksum,
-          chunk_number: i + 1,
-          chunk_content: SqlString.escape(content[i]),
-          chunk_embedding: embeddings[i]
-        })
-    );
-  }
-
-  // eslint-disable-next-line no-undef
-  const { error } = await Promise.all(promises);
-  if (error) {
-    console.error(error);
-    return { error };
-  }
-
-  return { error: null };
+const sendProgress = (channel, message) => {
+  channel.send({
+    type: 'broadcast',
+    event: 'upload:progress',
+    payload: {
+      message
+    }
+  });
 };
-
-export const runtime = 'nodejs';

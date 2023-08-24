@@ -3,7 +3,7 @@ import { ThreeDots } from 'react-loader-spinner';
 
 import { Stack, Typography } from '@mui/material';
 
-export default function Loader() {
+export default function Loader({ status }) {
   return (
     <Stack alignItems="center">
       <ThreeDots color="#a4abce" height="120" />
@@ -14,7 +14,7 @@ export default function Loader() {
           textAlign: 'left'
         }}
       >
-        Processing uploaded document
+        {status}
       </Typography>
     </Stack>
   );

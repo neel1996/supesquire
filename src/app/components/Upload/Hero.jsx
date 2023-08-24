@@ -17,6 +17,40 @@ export default function Hero() {
   const { setActiveChatId, setCurrentDocument, supabase } =
     useContext(ChatContext);
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState('Uploading document...');
+
+  const openSocket = useCallback(
+    async (id) => {
+      const channel = supabase.channel(`upload:${id}`);
+
+      channel
+        .on('broadcast', { event: 'upload:complete' }, ({ payload }) => {
+          setLoading(false);
+
+          const { id, title, fileName } = payload;
+          setActiveChatId(id);
+          setCurrentDocument({
+            title,
+            id,
+            fileName
+          });
+        })
+        .on('broadcast', { event: 'upload:progress' }, ({ payload }) => {
+          setStatus(payload.message);
+        })
+        .on('broadcast', { event: 'upload:error' }, ({ payload }) => {
+          console.error(payload);
+          setLoading(false);
+          toast.error(payload.error, {
+            position: 'bottom-left',
+            autoClose: 3000,
+            toastId: 'upload_error'
+          });
+        })
+        .subscribe();
+    },
+    [setActiveChatId, setCurrentDocument, supabase]
+  );
 
   const onDrop = useCallback(
     async (acceptedFiles) => {
@@ -46,20 +80,25 @@ export default function Hero() {
             method: 'POST',
             body: JSON.stringify({ checksum, fileName: file.name })
           });
+
           if (!res.ok) {
             throw new Error('Error processing document');
           }
 
-          const { title, fileName, content } = await res.json();
-
-          setLoading(false);
-          setActiveChatId(checksum);
-          setCurrentDocument({
-            title,
-            id: checksum,
-            fileName,
-            content
-          });
+          if (res.status === 201) {
+            openSocket(checksum);
+            return;
+          } else if (res.status === 200) {
+            const { id, title, fileName } = await res.json();
+            setActiveChatId(checksum);
+            setCurrentDocument({
+              title,
+              id,
+              fileName
+            });
+            setLoading(false);
+            return;
+          }
         })
         .catch((error) => {
           setLoading(false);
@@ -72,7 +111,7 @@ export default function Hero() {
           });
         });
     },
-    [supabase, setActiveChatId, setCurrentDocument]
+    [openSocket, setActiveChatId, setCurrentDocument, supabase]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -100,7 +139,7 @@ export default function Hero() {
     >
       <UploadInput getInputProps={getInputProps} />
       {loading ? (
-        <Loader />
+        <Loader status={status} />
       ) : (
         <>
           <Stack
