@@ -16,11 +16,11 @@ Supesquire is a `Next.js` application powered by OpenAI and supabase. It is well
 
 # Stack
 
-- **Supabase**: User authentication, storing the PDF document, persisting the document history and all the chat records in the Database
+- **Supabase**: User authentication, storing the PDF document, realtime communication, persisting the document history and all the chat records in the Database
 - **langchain**: Extract textual content from the PDF document and generate tailored prompts for document questions & answering
 - **Next.js**: UI and Backend
 
-![hld](https://github.com/neel1996/supesquire/assets/47709856/d799e2df-365d-43ce-a069-dab74052a615)
+![stack](https://github.com/neel1996/supesquire/assets/47709856/05a3d5d9-35d9-4442-9055-e0de605fb2ad)
 
 # Supabase setup
 
@@ -59,3 +59,28 @@ docker build -t <label>:<version> .
 
 docker run -p 3000:3000 --env-file .env <label>:<version>
 ```
+
+## Messaging tips
+
+- To get the resutls as a bulleted list, prefix your message with `List the <something>`
+
+```
+context: Chatting with the specification document of a bike
+```
+**Q: List the key differences between all the variants**
+
+**A:**
+
+![list_demo](https://github.com/neel1996/supesquire/assets/47709856/1631d98a-0704-48d3-9029-f5d50617106e)
+
+- The app supports syntax highlighting for code snippets. If the document includes code snippets, then you can make the model return it in a formatted
+
+```
+context: Chatting with a book that covers the concepts of Golang 
+```
+
+**Q: How to reverse a string and show the code for the same**
+
+**A:**
+
+![code_demo](https://github.com/neel1996/supesquire/assets/47709856/9bc052ab-9885-495d-bf0d-f5289ce68d14)
