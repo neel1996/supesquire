@@ -98,6 +98,10 @@ INSERT
 
 CREATE POLICY "Enable delete for users based on user_id" ON "public"."documents" AS PERMISSIVE FOR DELETE TO authenticated USING (auth.uid() = created_by);
 
+CREATE POLICY "Enable update for users based on email" ON "public"."documents" AS PERMISSIVE FOR
+UPDATE
+    TO authenticated USING (auth.uid() = created_by) WITH CHECK (auth.uid() = created_by);
+
 CREATE POLICY "Enable read access for authenticated users only" ON "public"."chat_records" AS PERMISSIVE FOR
 SELECT
     TO authenticated USING (auth.uid() = created_by);

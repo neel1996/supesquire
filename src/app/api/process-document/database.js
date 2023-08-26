@@ -33,13 +33,7 @@ export const fetchDocument = async ({ checksum }) => {
   };
 };
 
-export const saveDocument = async ({
-  checksum,
-  fileName,
-  title,
-  docContent,
-  chunks
-}) => {
+export const saveDocument = async ({ checksum, fileName, chunks }) => {
   const { data: object, error: objectError } = await supabase()
     .schema('storage')
     .from('objects')
@@ -57,8 +51,7 @@ export const saveDocument = async ({
     .insert({
       checksum: checksum,
       document_name: fileName,
-      content: SqlString.escape(docContent),
-      title: title,
+      title: fileName,
       uploaded_object_id: object[0].id
     });
 
@@ -82,7 +75,6 @@ export const saveDocument = async ({
   return {
     data: {
       id: checksum,
-      title,
       fileName
     },
     error: null

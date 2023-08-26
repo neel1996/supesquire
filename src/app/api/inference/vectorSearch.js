@@ -1,10 +1,10 @@
 import { openAIEmbedding } from '../openai';
 import { supabase } from '../supabase';
 
-export const filterSimilarVectors = async (documentId, message) => {
+export const filterSimilarVectors = async (documentId, message, matchCount) => {
   const { data: vectors, error } = await supabase().rpc('match_documents', {
     query_embedding: await openAIEmbedding.embedQuery(message),
-    match_count: 10,
+    match_count: matchCount,
     filter_checksum: documentId
   });
 

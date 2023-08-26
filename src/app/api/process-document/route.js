@@ -1,12 +1,10 @@
-import { loadQAChain } from 'langchain/chains';
-import { Document } from 'langchain/document';
 import { NextResponse } from 'next/server';
 
-import { llm } from '../openai';
 import { supabase } from '../supabase';
+import { extractDocumentContent } from './contentExtractor';
 import { fetchDocument, saveDocument } from './database';
-import { extractDocumentContent } from './documentProcessor';
 import { download } from './supabaseDownload';
+import { generateDocumentTitle } from './titleGenerator';
 
 export const POST = async (req) => {
   const { checksum, fileName } = await req.json();
@@ -48,18 +46,14 @@ const processDocumentInBackground = async ({
   checksum
 }) => {
   sendProgress(channel, 'Extracting document content...');
-  const { content, chunks } = await extractDocumentContent(file);
-
-  sendProgress(channel, 'Saving document...');
-  const title = await documentTitle(content);
+  const { chunks } = await extractDocumentContent(file);
 
   sendProgress(channel, 'Saving document details...');
+  messageForLongDocs(chunks, channel);
   const { data, error } = await saveDocument({
     fileName,
     checksum,
-    docContent: content,
-    chunks,
-    title
+    chunks
   });
 
   if (error) {
@@ -67,34 +61,21 @@ const processDocumentInBackground = async ({
     return;
   }
 
-  channel.send({
-    type: 'broadcast',
-    event: 'upload:complete',
-    payload: {
-      ...data
-    }
+  sendProgress(channel, 'Generating document title...');
+  generateDocumentTitle(checksum, channel).then(({ title }) => {
+    console.log({ title });
+
+    channel.send({
+      type: 'broadcast',
+      event: 'upload:complete',
+      payload: {
+        ...data,
+        title
+      }
+    });
   });
 
   return;
-};
-
-const documentTitle = async (content) => {
-  const chain = loadQAChain(llm, {
-    type: 'stuff',
-    verbose: true
-  });
-
-  const { text } = await chain.call({
-    input_documents: [
-      new Document({
-        pageContent: content?.slice(0, 6000)
-      })
-    ],
-    question:
-      'What is the title of this document?\nRespond only the title and nothing else\nDo not include any quotations or a prefix in the title\nThe title should not be more than 10 words long'
-  });
-
-  return text;
 };
 
 const sendProgress = (channel, message) => {
@@ -115,4 +96,13 @@ const sendError = (channel, error) => {
       error
     }
   });
+};
+
+const messageForLongDocs = (chunks, channel) => {
+  if (chunks.content.length > 10) {
+    sendProgress(
+      channel,
+      "Uploading a big document, aren't we?\nThis might take a while..."
+    );
+  }
 };
