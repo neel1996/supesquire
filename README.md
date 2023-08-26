@@ -67,6 +67,7 @@ docker run -p 3000:3000 --env-file .env <label>:<version>
 ```
 context: Chatting with the specification document of a bike
 ```
+
 **Q: List the key differences between all the variants**
 
 **A:**
@@ -76,7 +77,7 @@ context: Chatting with the specification document of a bike
 - The app supports syntax highlighting for code snippets. If the document includes code snippets, then you can make the model return it in a formatted
 
 ```
-context: Chatting with a book that covers the concepts of Golang 
+context: Chatting with a book that covers the concepts of Golang
 ```
 
 **Q: How to reverse a string and show the code for the same**

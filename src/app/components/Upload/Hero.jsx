@@ -12,6 +12,7 @@ import FeatureCards from './FeatureCards';
 import Loader from './Loader';
 import UploadInput from './UploadInput';
 import { generateChecksum } from './checksum';
+import { extractDocumentContent } from './contentExtractor';
 
 export default function Hero() {
   const { setActiveChatId, setCurrentDocument, supabase } =
@@ -74,42 +75,48 @@ export default function Hero() {
           cacheControl: '3600',
           upsert: true,
           contentType: 'application/pdf'
-        })
-        .then(async () => {
-          const res = await fetch('/api/process-document', {
-            method: 'POST',
-            body: JSON.stringify({ checksum, fileName: file.name })
-          });
-
-          if (!res.ok) {
-            throw new Error('Error processing document');
-          }
-
-          if (res.status === 201) {
-            openSocket(checksum);
-            return;
-          } else if (res.status === 200) {
-            const { id, title, fileName } = await res.json();
-            setActiveChatId(checksum);
-            setCurrentDocument({
-              title,
-              id,
-              fileName
-            });
-            setLoading(false);
-            return;
-          }
-        })
-        .catch((error) => {
-          setLoading(false);
-          console.error(error);
-
-          toast.error(error.toString(), {
-            position: 'bottom-left',
-            autoClose: 3000,
-            toastId: 'upload_error'
-          });
         });
+
+      setStatus('Extracting document content...');
+      const { response, error } = await extractDocumentContent(file).then(
+        async ({ content }) => {
+          const response = await fetch('/api/process-document', {
+            method: 'POST',
+            body: JSON.stringify({ checksum, fileName: file.name, content })
+          });
+
+          if (!response.ok) {
+            return { error: 'Error processing document' };
+          }
+
+          return { response };
+        }
+      );
+
+      if (error) {
+        setLoading(false);
+        toast.error('Error uploading document', {
+          position: 'bottom-left',
+          autoClose: 3000,
+          toastId: 'upload_error'
+        });
+        return;
+      }
+
+      if (response.status === 201) {
+        openSocket(checksum);
+        return;
+      } else if (response.status === 200) {
+        const { id, title, fileName } = await response.json();
+        setActiveChatId(checksum);
+        setCurrentDocument({
+          title,
+          id,
+          fileName
+        });
+        setLoading(false);
+        return;
+      }
     },
     [openSocket, setActiveChatId, setCurrentDocument, supabase]
   );

@@ -23,6 +23,7 @@
     "next": "13.4.13",
     "openai": "^3.3.0",
     "pdf-parse": "^1.1.1",
+    "pdfjs-dist": "^3.9.179",
     "prettier": "^3.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "encoding": "^0.1.13",
-    "eslint": "^8.46.0"
+    "eslint": "^8.46.0",
+    "raw-loader": "^4.0.2"
   }
 }

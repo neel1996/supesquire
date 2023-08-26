@@ -4,8 +4,7 @@ import { OpenAIApi } from 'openai';
 
 export const llm = new ChatOpenAI({
   openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-  modelName: 'gpt-3.5-turbo',
-  temperature: 0
+  modelName: 'gpt-3.5-turbo'
 });
 
 export const openAI = new OpenAIApi({

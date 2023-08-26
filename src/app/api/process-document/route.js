@@ -1,28 +1,21 @@
 import { NextResponse } from 'next/server';
 
 import { supabase } from '../supabase';
-import { extractDocumentContent } from './contentExtractor';
 import { fetchDocument, saveDocument } from './database';
-import { download } from './supabaseDownload';
+import { generateEmbeddings } from './embeddingGenerator';
 import { generateDocumentTitle } from './titleGenerator';
 
 export const POST = async (req) => {
-  const { checksum, fileName } = await req.json();
+  const { checksum, fileName, content } = await req.json();
 
   const { data, error: fetchError } = await fetchDocument({ checksum });
   if (fetchError) {
-    console.error(error);
+    console.error(fetchError);
     return NextResponse.json({ error: fetchError }, { status: 500 });
   }
 
   if (data) {
     return NextResponse.json({ ...data }, { status: 200 });
-  }
-
-  const { file, error } = await download(`${checksum}.pdf`);
-  if (error) {
-    console.error(error);
-    return NextResponse.json({ error }, { status: 500 });
   }
 
   const channel = supabase().channel(`upload:${checksum}`);
@@ -34,21 +27,20 @@ export const POST = async (req) => {
   });
   sendProgress(channel, 'Processing document...');
 
-  processDocumentInBackground({ channel, file, fileName, checksum });
+  processDocumentInBackground({ channel, content, fileName, checksum });
 
   return NextResponse.json({}, { status: 201 });
 };
 
 const processDocumentInBackground = async ({
   channel,
-  file,
+  content,
   fileName,
   checksum
 }) => {
-  sendProgress(channel, 'Extracting document content...');
-  const { chunks } = await extractDocumentContent(file);
-
   sendProgress(channel, 'Saving document details...');
+  const chunks = await generateEmbeddings(content);
+
   messageForLongDocs(chunks, channel);
   const { data, error } = await saveDocument({
     fileName,
@@ -62,20 +54,15 @@ const processDocumentInBackground = async ({
   }
 
   sendProgress(channel, 'Generating document title...');
-  generateDocumentTitle(checksum, channel).then(({ title }) => {
-    console.log({ title });
-
-    channel.send({
-      type: 'broadcast',
-      event: 'upload:complete',
-      payload: {
-        ...data,
-        title
-      }
-    });
+  const { title } = await generateDocumentTitle(checksum, channel);
+  channel.send({
+    type: 'broadcast',
+    event: 'upload:complete',
+    payload: {
+      ...data,
+      title
+    }
   });
-
-  return;
 };
 
 const sendProgress = (channel, message) => {
