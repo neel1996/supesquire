@@ -34,6 +34,13 @@ export default function ChatItem({
   }
 
   useEffect(() => {
+    if (typeof window?.MathJax !== 'undefined') {
+      window.MathJax.typesetClear();
+      window.MathJax.typeset();
+    }
+  }, [conversation.message]);
+
+  useEffect(() => {
     rowHeights.current[rowPosition] = rowRef.current.clientHeight;
     listRef.current.resetAfterIndex(0);
   }, [rowRef, rowHeights, listRef, rowPosition]);
