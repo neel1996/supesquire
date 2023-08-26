@@ -1,9 +1,10 @@
 FROM node:18.16.1-alpine3.18 as base
 
 FROM base as deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat python3 pkgconfig make g++ gcc libtool autoconf automake jpeg-dev cairo-dev pango-dev giflib-dev build-base libpng-dev nasm
 WORKDIR /app
 COPY package.json yarn.lock /app
+RUN yarn add canvas@2.6.1
 RUN yarn --frozen-lockfile
 
 FROM base as builder
