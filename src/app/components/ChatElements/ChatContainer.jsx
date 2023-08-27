@@ -75,7 +75,7 @@ export default function ChatMessage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [conversations, scrollToBottom]);
+  }, [conversations.length, scrollToBottom]);
 
   useEffect(() => {
     setConversations([]);
