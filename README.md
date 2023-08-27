@@ -85,3 +85,8 @@ context: Chatting with a book that covers the concepts of Golang
 **A:**
 
 ![code_demo](https://github.com/neel1996/supesquire/assets/47709856/9bc052ab-9885-495d-bf0d-f5289ce68d14)
+
+- The auto formatting prompt will handle certain formatting behind the scenes. Based on the formatted response, the UI uses MathJaX to render math/chemical equations and tables 
+
+![math-chem](https://github.com/neel1996/supesquire/assets/47709856/6cbc6fc9-8c23-431b-87b9-29e4553b043e)
+
