@@ -1,4 +1,11 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import { Comment } from 'react-loader-spinner';
 import { toast } from 'react-toastify';
 import { VariableSizeList as List } from 'react-window';
@@ -16,7 +23,6 @@ export default function ChatMessage() {
   const { activeChatId, currentDocument, supabase } = useContext(ChatContext);
 
   const [conversations, setConversations] = useState([]);
-  const [userMessage, setUserMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const listRef = useRef(null);
@@ -116,26 +122,25 @@ export default function ChatMessage() {
       .subscribe();
   }, [channel]);
 
-  const submitHandler = async () => {
-    if (userMessage?.length === 0) {
+  const submitHandler = async (message) => {
+    if (message?.length === 0) {
       return;
     }
 
     fetch('/api/inference', {
       method: 'POST',
       body: JSON.stringify({
-        message: userMessage,
+        message,
         documentId: activeChatId
       })
     });
 
-    setUserMessage('');
     setConversations((prev) => {
       return [
         ...prev,
         {
           user: 'human',
-          message: userMessage,
+          message,
           created_at: new Date().toString()
         },
         {
@@ -154,7 +159,7 @@ export default function ChatMessage() {
     });
   };
 
-  function Item({ style, index }) {
+  const Item = memo(function Item({ style, index }) {
     const rowRef = useRef({});
 
     return (
@@ -168,7 +173,7 @@ export default function ChatMessage() {
         conversation={conversations[index]}
       />
     );
-  }
+  });
 
   return (
     <Grid container flexDirection="column" height="100%">
@@ -215,24 +220,7 @@ export default function ChatMessage() {
           </List>
         )}
       </Grid>
-      {loading ? (
-        <Loader />
-      ) : (
-        <form
-          style={{
-            marginBottom: '60px'
-          }}
-          onSubmit={(e) => {
-            e.preventDefault();
-            submitHandler();
-          }}
-        >
-          <ChatInput
-            userMessage={userMessage}
-            setUserMessage={setUserMessage}
-          />
-        </form>
-      )}
+      {loading ? <Loader /> : <ChatInput submitHandler={submitHandler} />}
     </Grid>
   );
 }
