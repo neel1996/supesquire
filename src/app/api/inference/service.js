@@ -1,5 +1,4 @@
-import { loadQAStuffChain } from 'langchain/chains';
-import { Document } from 'langchain/document';
+import { LLMChain, SequentialChain } from 'langchain/chains';
 import { PromptTemplate } from 'langchain/prompts';
 
 import { llm } from '../openai';
@@ -19,34 +18,63 @@ export const infer = async ({ documentId, question, matchCount = 10 }) => {
     };
   }
 
-  // Overriding the default prompt used by QAChain with the below
-  // This is tailored for limiting the response length and for enhancing the message format
-  const prompt = new PromptTemplate({
+  try {
+    const pipeline = new SequentialChain({
+      chains: [qaChain(), formatChain()],
+      inputVariables: ['context', 'question'],
+      outputVariables: ['answer', 'text'],
+      verbose: true
+    });
+
+    const { text, aiError } = await pipeline
+      .call({
+        context: content.slice(0, 6000),
+        question
+      })
+      .catch((error) => {
+        console.error({ error });
+        return { aiError: error };
+      });
+
+    return { answer: text, error: aiError };
+  } catch (error) {
+    console.error({ error });
+    return {
+      error
+    };
+  }
+};
+
+const qaChain = () => {
+  // This is the same prompt copied from the langchain qaChain function with a few modifications
+  const qaPrompt = new PromptTemplate({
     template:
-      "Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. If the question asks to list something, then list it as bullet points with a newline character. If the answer includes multiple sentences, then separate it with a newline character.\n\n{context}\n\nQuestion: {question}\nConvert the mathematical equations, symbols and formulas returned in the response to LaTeX\nEnclose the code blocks in the response within a Markdown code block (E.g: var a = 10; to ```var a = 10```)\n\nHelpful Answer:",
+      "Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. If the question asks to list something, then list it as bullet points with a newline character. If the question asks to return a table, then wrap it in a Markdown table notation.\n\n{context}\n\nQuestion: {question}\n\nHelpful Answer:",
     inputVariables: ['context', 'question']
   });
 
-  const chain = loadQAStuffChain(llm, {
+  return new LLMChain({
+    llm,
     verbose: true,
-    prompt
+    prompt: qaPrompt,
+    outputKey: 'answer'
+  });
+};
+
+// Formats the answer to be displayed in the chat window
+// This will be parsed in the UI to enable syntax highlighting for code blocks
+// and to render LaTeX equations
+const formatChain = () => {
+  const formatPrompt = new PromptTemplate({
+    template:
+      'Use the following content and perform the formatting options listed below. Perform the formatting only if applicable. If the formatting cannot be applied, then simply return the same content back as the response\n\n* If the content includes multiple sentences, then separate it with a newline character\n* Convert the mathematical equations, symbols and formulas to LaTeX\n* Convert chemical equations and chemical reactions to mhchem for MathJax notations\n\nFor Example:\n\n \\(\\ce{{C4H10 + 13/2O2 -> 4CO2 + 5H2O}}\\) is the mhchem notation for C4H10 + 13/2O2 -> 4CO2 + 5H2O\n\n* Enclose the code blocks in the response within a Markdown code block. Do not enclose it in a Markdown code block if you cannot identify the programming language of the content\n\nFor Example:\n\n var a = 10; should be converted to \n```javascript\nvar a = 10\n```\n\n* Convert the tables to MathJax array notation removing other unwanted characters from the response\n\nFor Example:\n\n Table with values 1 2 3 should be converted to \n\n\\[\\begin{{array}}{{|c|c|c|}}\\hline1 & 2 & 3 \\\\hline\\end{{array}}\\]\n\nContent to be formatted:\n\n{answer}\n\nFormatted Content:',
+    inputVariables: ['answer']
   });
 
-  const docs = [
-    new Document({
-      pageContent: content.slice(0, 6000)
-    })
-  ];
-
-  const { text, aiError } = await chain
-    .call({
-      input_documents: docs,
-      question: question
-    })
-    .catch((error) => {
-      console.error({ error });
-      return { aiError: error };
-    });
-
-  return { answer: text, error: aiError };
+  return new LLMChain({
+    llm,
+    verbose: true,
+    prompt: formatPrompt,
+    outputKey: 'text'
+  });
 };
