@@ -1,12 +1,12 @@
 import format from 'date-fns/format';
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import { Face6, SmartToy } from '@mui/icons-material';
 import { Box, Card, Grid, Icon, ListItem, Typography } from '@mui/material';
 
 import CodeBlock from './CodeBlock';
 
-export default function ChatItem({
+export default memo(function ChatItem({
   rowPosition,
   style,
   conversation,
@@ -35,10 +35,26 @@ export default function ChatItem({
 
   useEffect(() => {
     if (typeof window?.MathJax !== 'undefined') {
+      window.MathJax = {
+        ...window.MathJax,
+        tex: {
+          inlineMath: [
+            ['$', '$'],
+            ['\\(', '\\)']
+          ],
+          packages: { '[+]': ['mhchem', 'color'] },
+          color: {
+            padding: '5px',
+            borderWidth: '2px'
+          }
+        },
+        loader: { load: ['[tex]/mhchem', '[tex]/color'] }
+      };
+
       window.MathJax.typesetClear();
-      window.MathJax.typeset();
+      window.MathJax.typesetPromise();
     }
-  }, [conversation.message]);
+  }, []);
 
   useEffect(() => {
     rowHeights.current[rowPosition] = rowRef.current.clientHeight;
@@ -135,4 +151,4 @@ export default function ChatItem({
       </Grid>
     </ListItem>
   );
-}
+});
