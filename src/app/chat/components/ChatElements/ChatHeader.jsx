@@ -1,11 +1,13 @@
 import { useContext } from 'react';
 
-import { ChatContext } from '@/app/context/Context';
+import { supabaseClient } from '@/app/supabaseClient';
 import { Download, PictureAsPdf } from '@mui/icons-material';
 import { Grid, IconButton, Stack, Typography } from '@mui/material';
 
+import { ChatContext } from '../../context/Context';
+
 export default function ChatHeader() {
-  const { currentDocument, supabase } = useContext(ChatContext);
+  const { currentDocument } = useContext(ChatContext);
 
   return (
     <Grid
@@ -73,7 +75,7 @@ export default function ChatHeader() {
             margin: '0px 20px'
           }}
           onClick={async () => {
-            const { data } = await supabase.storage
+            const { data } = await supabaseClient.storage
               .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET)
               .download(`${currentDocument?.id}.pdf`);
 

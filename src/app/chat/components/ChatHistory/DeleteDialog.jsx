@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { toast } from 'react-toastify';
 
-import { ChatContext } from '@/app/context/Context';
 import {
   Button,
   Dialog,
@@ -9,6 +8,8 @@ import {
   DialogContent,
   DialogTitle
 } from '@mui/material';
+
+import { ChatContext } from '../../context/Context';
 
 export default function DeleteDialog({
   chatToDelete,

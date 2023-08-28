@@ -4,6 +4,7 @@ import { useCallback, useContext, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 
+import { supabaseClient } from '@/app/supabaseClient';
 import { CloudUpload, UploadFileRounded } from '@mui/icons-material';
 import { Box, Grid, Stack, Typography } from '@mui/material';
 
@@ -15,14 +16,13 @@ import { generateChecksum } from './checksum';
 import { extractDocumentContent } from './contentExtractor';
 
 export default function Hero() {
-  const { setActiveChatId, setCurrentDocument, supabase } =
-    useContext(ChatContext);
+  const { setActiveChatId, setCurrentDocument } = useContext(ChatContext);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('Uploading document...');
 
   const openSocket = useCallback(
     async (id) => {
-      const channel = supabase.channel(`upload:${id}`);
+      const channel = supabaseClient.channel(`upload:${id}`);
 
       channel
         .on('broadcast', { event: 'upload:complete' }, ({ payload }) => {
@@ -50,7 +50,7 @@ export default function Hero() {
         })
         .subscribe();
     },
-    [setActiveChatId, setCurrentDocument, supabase]
+    [setActiveChatId, setCurrentDocument]
   );
 
   const onDrop = useCallback(
@@ -69,7 +69,7 @@ export default function Hero() {
       const file = acceptedFiles[0];
       const checksum = await generateChecksum(file);
 
-      supabase.storage
+      supabaseClient.storage
         .from(process.env.NEXT_PUBLIC_SUPABASE_BUCKET)
         .upload(`${checksum}.pdf`, file, {
           cacheControl: '3600',
@@ -118,7 +118,7 @@ export default function Hero() {
         return;
       }
     },
-    [openSocket, setActiveChatId, setCurrentDocument, supabase]
+    [openSocket, setActiveChatId, setCurrentDocument]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

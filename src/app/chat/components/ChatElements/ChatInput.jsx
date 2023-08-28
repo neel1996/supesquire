@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-import { KeyboardArrowRight, Send } from '@mui/icons-material';
+import { KeyboardArrowRight, Search, Send } from '@mui/icons-material';
 import { Grid, IconButton, InputAdornment, TextField } from '@mui/material';
 
-export default function ChatInput({ submitHandler }) {
+export default function ChatInput({ submitHandler, placeHolder, mode }) {
   const [input, setInput] = useState('');
 
   return (
@@ -51,7 +51,7 @@ export default function ChatInput({ submitHandler }) {
             fullWidth
             value={input}
             variant="outlined"
-            placeholder="Type your message here..."
+            placeholder={placeHolder || 'Type your message here...'}
             onChange={(e) => {
               setInput(e.target.value);
             }}
@@ -97,11 +97,19 @@ export default function ChatInput({ submitHandler }) {
               height: '100%'
             }}
           >
-            <Send
-              sx={{
-                color: '#ffffff'
-              }}
-            />
+            {mode === 'search' ? (
+              <Search
+                sx={{
+                  color: '#ffffff'
+                }}
+              />
+            ) : (
+              <Send
+                sx={{
+                  color: '#ffffff'
+                }}
+              />
+            )}
           </IconButton>
         </Grid>
       </Grid>
