@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 
-import { ChatContext } from '@/app/context/Context';
 import { DeleteForever, HistoryEdu } from '@mui/icons-material';
 import {
   IconButton,
@@ -12,6 +11,7 @@ import {
   Typography
 } from '@mui/material';
 
+import { ChatContext } from '../../context/Context';
 import DeleteDialog from './DeleteDialog';
 
 export default function HistoryListItem({ isActive, conversation }) {

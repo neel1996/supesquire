@@ -10,17 +10,18 @@ import { Comment } from 'react-loader-spinner';
 import { toast } from 'react-toastify';
 import { VariableSizeList as List } from 'react-window';
 
-import { ChatContext } from '@/app/context/Context';
+import { supabaseClient } from '@/app/supabaseClient';
 import { Alert, Grid, Typography } from '@mui/material';
 
-import LogoCard from '../LogoCard';
+import { ChatContext } from '../../context/Context';
 import ChatHeader from './ChatHeader';
 import ChatInput from './ChatInput';
 import ChatItem from './ChatItem';
 import { Loader } from './Loader';
+import LogoCard from '@/app/LogoCard';
 
 export default function ChatMessage() {
-  const { activeChatId, currentDocument, supabase } = useContext(ChatContext);
+  const { activeChatId, currentDocument } = useContext(ChatContext);
 
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ export default function ChatMessage() {
   const listRef = useRef(null);
   const rowHeights = useRef({});
 
-  const channel = supabase?.channel(activeChatId);
+  const channel = supabaseClient?.channel(activeChatId);
 
   const scrollToBottom = useCallback(
     () => listRef?.current?.scrollToItem(conversations.length, 'end'),
