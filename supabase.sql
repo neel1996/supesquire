@@ -53,7 +53,9 @@ create function match_documents (
     document_checksum varchar,
     chunk_content text,
     similarity float
-) language plpgsql as $ $ #variable_conflict use_column
+) language plpgsql
+as $$
+#variable_conflict use_column
 begin return query
 select
     document_checksum,
@@ -69,11 +71,38 @@ order by
     document_chunks.chunk_embedding <= > query_embedding
 limit
     match_count;
-
 end;
+$$;
 
-$ $;
-
+-- Create function to perform semantic search on embedded data
+create function search_documents (
+  query_embedding vector(1536),
+  match_count int DEFAULT null
+) returns table (
+  document_checksum varchar,
+  document_name varchar,
+  created_time timestamp,
+  chunk_content text,
+  similarity float
+)
+language plpgsql
+as $$
+#variable_conflict use_column
+begin
+  return query
+  select
+    document_chunks.document_checksum,
+    documents.document_name,
+    documents.created_time,
+    document_chunks.chunk_content,
+    1 - (document_chunks.chunk_embedding <=> query_embedding) as similarity
+  from document_chunks
+  join documents on documents.checksum = document_chunks.document_checksum
+  order by document_chunks.chunk_embedding <=> query_embedding
+  limit match_count;
+end;
+$$;
+---
 -- creating the storage bucket to store the uploaded documents --
 insert into
     storage.buckets (id, name, file_size_limit, allowed_mime_types)
@@ -122,3 +151,6 @@ INSERT
 CREATE POLICY "Enable all for authenticated users only" ON "storage"."buckets" AS PERMISSIVE FOR ALL TO authenticated USING (true);
 
 CREATE POLICY "Enable all for authenticated users only" ON "storage"."objects" AS PERMISSIVE FOR ALL TO authenticated USING (true);
+
+-- Creating vector index for the embedding field
+-- CREATE INDEX ON public.document_chunks USING ivfflat (chunk_embedding vector_cosine_ops) WITH (lists = 10);
