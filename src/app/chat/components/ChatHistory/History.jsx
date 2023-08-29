@@ -1,6 +1,7 @@
+import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 
-import { AddBox, HistoryOutlined } from '@mui/icons-material';
+import { AddBox, HistoryOutlined, Home } from '@mui/icons-material';
 import {
   Box,
   Grid,
@@ -11,10 +12,12 @@ import {
   Typography
 } from '@mui/material';
 
-import ConversationHistory from './ConversationHistory';
 import { ChatContext } from '../../context/Context';
+import ConversationHistory from './ConversationHistory';
 
 export default function History() {
+  const route = useRouter();
+
   const { conversationHistory, setActiveChatId, setOpenDraw } =
     useContext(ChatContext);
 
@@ -53,13 +56,21 @@ export default function History() {
         boxShadow: '0px 0px 12px 0px rgb(63,81,181,0.17)'
       }}
     >
-      <Grid
-        container
-        textAlign="center"
-        alignItems="center"
-        justifyContent="space-between"
-        padding="10px 0px"
-      >
+      <Grid container textAlign="center" alignItems="center" padding="10px 0px">
+        <Grid item xs={1}>
+          <IconButton
+            sx={{
+              color: '#94a4ff'
+            }}
+            onClick={() => {
+              setActiveChatId(null);
+              setOpenDraw(false);
+              route.push('/');
+            }}
+          >
+            <Home />
+          </IconButton>
+        </Grid>
         <Grid item xs={9}>
           <Stack
             sx={{
@@ -84,7 +95,7 @@ export default function History() {
             </Typography>
           </Stack>
         </Grid>
-        <Grid item xs>
+        <Grid item xs={1}>
           <IconButton
             sx={{
               color: '#94a4ff'

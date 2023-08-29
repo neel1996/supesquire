@@ -14,7 +14,9 @@ export default function ChatInput({ submitHandler, placeHolder, mode }) {
       onSubmit={(e) => {
         e.preventDefault();
 
-        setInput('');
+        if (mode !== 'search') {
+          setInput('');
+        }
         submitHandler(input);
       }}
     >

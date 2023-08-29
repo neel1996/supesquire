@@ -1,10 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Dna } from 'react-loader-spinner';
+import { toast } from 'react-toastify';
 
 import { Grid, Stack, Typography } from '@mui/material';
 
 import ChatInput from '../chat/components/ChatElements/ChatInput';
+import SearchResult from './SearchResult';
 
 export default function Search() {
+  const [searchResult, setSearchResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const submitHandler = async (query) => {
+    setSearchResult(null);
+    setLoading(true);
+    const { result } = await fetch('/api/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query
+      })
+    })
+      .then((res) => {
+        setLoading(false);
+        return res.json();
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+        toast.error('Search failed with error :', err);
+      });
+
+    setSearchResult(result);
+  };
+
   return (
     <Grid
       container
@@ -56,7 +87,21 @@ export default function Search() {
           </Typography>
           <Typography>Search based on what you have uploaded</Typography>
         </Stack>
-        <ChatInput placeHolder={'What are you looking for?'} mode="search" />
+        <ChatInput
+          submitHandler={submitHandler}
+          placeHolder={'What are you looking for?'}
+          mode="search"
+        />
+        {loading && (
+          <>
+            <Dna width={200} height={200} />
+          </>
+        )}
+        {searchResult && (
+          <Grid sx={{ width: '100%', maxHeight: 'calc(100vh - 400px)' }}>
+            <SearchResult result={searchResult} />
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );
