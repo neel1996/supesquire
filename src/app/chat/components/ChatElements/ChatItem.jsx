@@ -1,10 +1,9 @@
 import format from 'date-fns/format';
 import React, { memo, useEffect } from 'react';
 
+import CodeBlock from '@/app/CodeBlock';
 import { Face6, SmartToy } from '@mui/icons-material';
 import { Box, Card, Grid, Icon, ListItem, Typography } from '@mui/material';
-
-import CodeBlock from './CodeBlock';
 
 export default memo(function ChatItem({
   rowPosition,

@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { PushPin } from '@mui/icons-material';
 import { Box, Grid, Typography } from '@mui/material';
 
+import CodeBlock from '../CodeBlock';
+
 export default function ResultBox({ answer }) {
+  useEffect(() => {
+    if (typeof window?.MathJax !== 'undefined') {
+      window.MathJax = {
+        ...window.MathJax,
+        tex: {
+          inlineMath: [
+            ['$', '$'],
+            ['\\(', '\\)']
+          ],
+          packages: { '[+]': ['mhchem', 'color'] },
+          color: {
+            padding: '5px',
+            borderWidth: '2px'
+          }
+        },
+        loader: { load: ['[tex]/mhchem', '[tex]/color'] }
+      };
+
+      window.MathJax.typesetClear();
+      window.MathJax.typesetPromise();
+    }
+  }, []);
+
   return (
     <Box
       sx={{
@@ -42,7 +67,7 @@ export default function ResultBox({ answer }) {
             }
           }}
         >
-          {answer}
+          <CodeBlock message={answer} />
         </Typography>
       </Box>
     </Box>
