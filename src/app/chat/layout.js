@@ -1,13 +1,12 @@
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 
-import './globals.css';
-import Loading from './loading';
+import Loading from '../loading';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Search your docs',
+  title: 'Chat with your docs',
   description: 'App to chat with docs'
 };
 
@@ -23,7 +22,9 @@ export default function RootLayout({ children }) {
         ></script>
       </head>
       <body className={inter.className}>
-        <Suspense fallback={<Loading />}>{children}</Suspense>
+        <div>
+          <Suspense fallback={<Loading />}>{children}</Suspense>
+        </div>
       </body>
     </html>
   );

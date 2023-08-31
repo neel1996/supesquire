@@ -25,7 +25,7 @@ export const search = async (query) => {
   });
 
   const { text: content } = await paraphraseChain.call({
-    rawContent: closestMatch.chunk_content
+    rawContent: closestMatch.chunk_content.slice(0, 6000)
   });
 
   const { answer, error: chainError } = await sequentialPipeline({
