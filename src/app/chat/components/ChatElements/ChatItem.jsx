@@ -134,7 +134,8 @@ export default memo(function ChatItem({
                 xl: '14px',
                 xs: '12px'
               },
-              margin: '5px'
+              margin: '5px',
+              userSelect: 'text'
             }}
           >
             {conversation?.loader ? (
