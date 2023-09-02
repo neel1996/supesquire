@@ -6,8 +6,14 @@ export const qaChain = () => {
   // This is the same prompt copied from the langchain qaChain function with a few modifications
   const qaPrompt = new PromptTemplate({
     template:
-      "Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. If the question asks to list something, then list it as bullet points with a newline character. If the question asks to return a table, then convert the result to a MathJax array notations notation.\n\n{context}\n\nQuestion: {question}\n\nHelpful Answer:",
-    inputVariables: ['context', 'question']
+      "Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. If the question asks to list something, then list it as bullet points with a newline character. If the question asks to return a table, then convert the result to a MathJax array notations notation.\n\n{context}\n\nPrevious conversation:\n\nContext:\n\n{previousContext}\n\nQuestion:{previousQuestion}\nAnswer:{previousAnswer}\n\nCurrent conversation:\n\nQuestion: {question}\n\nHelpful Answer:",
+    inputVariables: [
+      'context',
+      'previousQuestion',
+      'previousAnswer',
+      'previousContext',
+      'question'
+    ]
   });
 
   return new LLMChain({
@@ -30,7 +36,6 @@ export const formatChain = () => {
 
   return new LLMChain({
     llm,
-    verbose: true,
     prompt: formatPrompt,
     outputKey: 'text'
   });

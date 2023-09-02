@@ -1,6 +1,11 @@
 import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { BufferMemory } from 'langchain/memory';
 import { OpenAIApi } from 'openai';
+
+const chatMemory = new BufferMemory();
+
+export { chatMemory };
 
 export const llm = new ChatOpenAI({
   openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,

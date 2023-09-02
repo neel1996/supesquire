@@ -36,7 +36,7 @@ create table public.document_chunks (
     document_checksum character varying null,
     chunk_number bigint null,
     chunk_content text not null,
-    chunk_embedding public.vector null,
+    chunk_embedding public.vector(1536) null,
     created_by uuid not null default auth.uid (),
     created_at timestamp with time zone not null default now(),
     constraint document_chunks_pkey primary key (id),

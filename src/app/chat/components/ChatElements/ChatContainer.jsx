@@ -6,10 +6,10 @@ import {
   useRef,
   useState
 } from 'react';
-import { Comment } from 'react-loader-spinner';
 import { toast } from 'react-toastify';
 import { VariableSizeList as List } from 'react-window';
 
+import LogoCard from '@/app/LogoCard';
 import { supabaseClient } from '@/app/supabaseClient';
 import { Alert, Grid, Typography } from '@mui/material';
 
@@ -18,7 +18,6 @@ import ChatHeader from './ChatHeader';
 import ChatInput from './ChatInput';
 import ChatItem from './ChatItem';
 import { Loader } from './Loader';
-import LogoCard from '@/app/LogoCard';
 
 export default function ChatMessage() {
   const { activeChatId, currentDocument } = useContext(ChatContext);
@@ -146,15 +145,7 @@ export default function ChatMessage() {
         },
         {
           user: 'ai',
-          loader: true,
-          message: (
-            <Comment
-              color="#ffffff"
-              height={50}
-              width={50}
-              backgroundColor="#1f232d"
-            />
-          )
+          loader: true
         }
       ];
     });

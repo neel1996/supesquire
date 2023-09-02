@@ -1,10 +1,13 @@
+import { ChatMessageHistory } from 'langchain/memory';
 import { NextResponse } from 'next/server';
 
+import { chatMemory } from '../openai';
 import { supabase } from '../supabase';
 import { infer } from './service';
 
 export const POST = async (req) => {
   const { documentId, message } = await req.json();
+  saveChatToBuffer(documentId, message, 'human');
 
   const channel = supabase().channel(documentId);
   channel.subscribe((status) => {
@@ -19,7 +22,7 @@ export const POST = async (req) => {
   if (error) return;
 
   infer({ documentId, question: message })
-    .then(async ({ answer, error }) => {
+    .then(async ({ answer, context, error }) => {
       if (error) {
         emitError(error, documentId);
       }
@@ -30,6 +33,7 @@ export const POST = async (req) => {
         actor: 'ai'
       });
       if (saveError) return;
+      saveChatToBuffer(documentId, answer, context, 'ai');
 
       channel.send({
         type: 'broadcast',
@@ -77,3 +81,25 @@ const saveChat = async (channel, chatRecord) => {
 
   return { error: null };
 };
+
+function saveChatToBuffer(documentId, message, context, role = 'human') {
+  try {
+    if (chatMemory.memoryKey !== documentId) {
+      chatMemory.memoryKey = documentId;
+    }
+
+    const saveItem = {
+      name: role,
+      content: message,
+      context
+    };
+
+    if (chatMemory.chatHistory) {
+      chatMemory.chatHistory.addMessage(saveItem);
+    } else {
+      chatMemory.chatHistory = new ChatMessageHistory().addMessage(saveItem);
+    }
+  } catch (error) {
+    console.error({ error });
+  }
+}

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 
+import { chatMemory } from '../openai';
 import { supabase } from '../supabase';
 
 export const POST = async (req) => {
+  chatMemory.clear();
+
   const body = await req.json();
 
   const { data, error } = await supabase()

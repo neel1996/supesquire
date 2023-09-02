@@ -1,5 +1,6 @@
 import format from 'date-fns/format';
 import React, { memo, useEffect } from 'react';
+import { ThreeDots } from 'react-loader-spinner';
 
 import CodeBlock from '@/app/CodeBlock';
 import { Face6, SmartToy } from '@mui/icons-material';
@@ -59,6 +60,32 @@ export default memo(function ChatItem({
     rowHeights.current[rowPosition] = rowRef.current.clientHeight;
     listRef.current.resetAfterIndex(0);
   }, [rowRef, rowHeights, listRef, rowPosition]);
+
+  if (conversation.user === 'ai' && conversation.loader) {
+    return (
+      <ListItem
+        key={rowPosition}
+        sx={{
+          display: 'flex',
+          justifyContent: styles.justifyContent,
+          ...style
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            color: '#a4abce',
+            gap: '10px',
+            margin: '10px 30px'
+          }}
+        >
+          <ThreeDots color="#a4abce" height="70" />
+          <Typography variant="body1">AI is thinking...</Typography>
+        </Box>
+      </ListItem>
+    );
+  }
 
   const TimeStamp = ({ conversation }) => {
     let formattedTimestamp;
@@ -138,11 +165,7 @@ export default memo(function ChatItem({
               userSelect: 'text'
             }}
           >
-            {conversation?.loader ? (
-              <>{conversation.message}</>
-            ) : (
-              <>{<CodeBlock message={conversation.message} />}</>
-            )}
+            <CodeBlock message={conversation.message} />
             {conversation.created_at && (
               <TimeStamp conversation={conversation} />
             )}
