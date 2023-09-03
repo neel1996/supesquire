@@ -1,8 +1,6 @@
 import { Inter } from 'next/font/google';
-import { Suspense } from 'react';
 
 import './globals.css';
-import Loading from './loading';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -22,9 +20,7 @@ export default function RootLayout({ children }) {
           src="https://cdn.jsdelivr.net/npm/mathjax@3.2.1/es5/tex-mml-chtml.js"
         ></script>
       </head>
-      <body className={inter.className}>
-        <Suspense fallback={<Loading />}>{children}</Suspense>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

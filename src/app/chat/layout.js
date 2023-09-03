@@ -1,7 +1,7 @@
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 
-import Loading from '../loading';
+import Loading from './loading';
 
 const inter = Inter({ subsets: ['latin'] });
 
