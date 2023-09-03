@@ -4,7 +4,11 @@ import { chatMemory } from '../openai';
 import { supabase } from '../supabase';
 
 export const POST = async (req) => {
-  chatMemory.clear();
+  try {
+    chatMemory.clear();
+  } catch (e) {
+    console.error(e);
+  }
 
   const body = await req.json();
 

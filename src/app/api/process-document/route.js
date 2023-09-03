@@ -54,7 +54,7 @@ const processDocumentInBackground = async ({
   }
 
   sendProgress(channel, 'Generating document title...');
-  const { title } = await generateDocumentTitle(checksum, channel);
+  const { title } = await generateDocumentTitle(checksum, fileName);
   channel.send({
     type: 'broadcast',
     event: 'upload:complete',

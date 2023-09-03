@@ -6,20 +6,23 @@ import { formatChain, qaChain } from './chains';
 export const sequentialPipeline = async ({ content, question }) => {
   const promptInputs = {
     context: content.slice(0, 6000),
-    question
+    question,
+    previousQuestion: 'None',
+    previousAnswer: 'None',
+    previousContext: 'None'
   };
 
-  const messages = await chatMemory.chatHistory.getMessages();
-  if (messages.length > 1) {
-    const aiMessage = messages.slice(-1)[0];
-    const humanMessage = messages.slice(-2)[0];
-    promptInputs.previousQuestion = humanMessage.content;
-    promptInputs.previousAnswer = aiMessage.content;
-    promptInputs.previousContext = aiMessage.context;
-  } else {
-    promptInputs.previousQuestion = '';
-    promptInputs.previousAnswer = '';
-    promptInputs.previousContext = '';
+  try {
+    const messages = await chatMemory.chatHistory.getMessages();
+    if (messages.length > 1) {
+      const aiMessage = messages.slice(-1)[0];
+      const humanMessage = messages.slice(-2)[0];
+      promptInputs.previousQuestion = humanMessage.content;
+      promptInputs.previousAnswer = aiMessage.content;
+      promptInputs.previousContext = aiMessage.context;
+    }
+  } catch (e) {
+    console.error(e);
   }
 
   const pipeline = new SequentialChain({
