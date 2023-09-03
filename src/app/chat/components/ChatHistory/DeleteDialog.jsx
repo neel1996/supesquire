@@ -11,11 +11,7 @@ import {
 
 import { ChatContext } from '../../context/Context';
 
-export default function DeleteDialog({
-  chatToDelete,
-  setChatToDelete,
-  setShowDelete
-}) {
+export default function DeleteDialog({ chatToDelete, setChatToDelete }) {
   const { setActiveChatId } = useContext(ChatContext);
 
   return (
@@ -44,7 +40,6 @@ export default function DeleteDialog({
           variant="text"
           onClick={() => {
             setChatToDelete(null);
-            setShowDelete(false);
             setActiveChatId(null);
           }}
         >
@@ -61,7 +56,6 @@ export default function DeleteDialog({
               .then(() => {
                 setActiveChatId(null);
                 setChatToDelete(null);
-                setShowDelete(false);
 
                 toast.success('Chat history deleted successfully');
               })

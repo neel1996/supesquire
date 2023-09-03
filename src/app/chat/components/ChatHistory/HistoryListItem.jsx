@@ -1,8 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import { DeleteForever, HistoryEdu } from '@mui/icons-material';
+import { HistoryEdu } from '@mui/icons-material';
 import {
-  IconButton,
   ListItem,
   ListItemButton,
   ListItemIcon,
@@ -12,41 +11,47 @@ import {
 } from '@mui/material';
 
 import { ChatContext } from '../../context/Context';
+import ActionButtons from './ActionButtons';
+import ChatTitleInput from './ChatTitleInput';
 import DeleteDialog from './DeleteDialog';
 
 export default function HistoryListItem({ isActive, conversation }) {
   const { setActiveChatId, setCurrentDocument, setOpenDraw } =
     useContext(ChatContext);
-  const [showDelete, setShowDelete] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   const [chatToDelete, setChatToDelete] = useState(null);
+  const [chatTitle, setChatTitle] = useState(conversation.title);
+
+  useEffect(() => {
+    return () => {
+      setIsEdit(false);
+      setChatToDelete(null);
+      setChatTitle(conversation.title);
+    };
+  }, [conversation.title, isActive]);
 
   return (
     <ListItem
       disablePadding
-      onMouseOver={() => {
-        setShowDelete(true);
-      }}
-      onMouseLeave={() => {
-        setShowDelete(false);
+      sx={{
+        background: isActive ? '#42475f' : '#313338',
+        '&:hover': {
+          background: '#42475f'
+        }
       }}
     >
       {chatToDelete && (
         <DeleteDialog
           chatToDelete={chatToDelete}
           setChatToDelete={setChatToDelete}
-          setShowDelete={setShowDelete}
         />
       )}
       <ListItemButton
         sx={{
           padding: '15px 10px',
-          background: isActive ? '#7f8cd4' : '#313338',
           color: '#ffffff',
           borderRadius: '1px',
-          fontSize: '12px',
-          '&:hover': {
-            background: '#7f8cd4'
-          }
+          fontSize: '12px'
         }}
         onClick={() => {
           setActiveChatId(conversation.checksum);
@@ -76,37 +81,27 @@ export default function HistoryListItem({ isActive, conversation }) {
                 width: '90%'
               }}
             >
-              {conversation.title}
+              {isActive && isEdit ? (
+                <ChatTitleInput
+                  chatId={conversation.checksum}
+                  chatTitle={chatTitle}
+                  setChatTitle={setChatTitle}
+                  setIsEdit={setIsEdit}
+                  setCurrentDocument={setCurrentDocument}
+                />
+              ) : (
+                conversation.title
+              )}
             </Typography>
           </Tooltip>
         </ListItemText>
       </ListItemButton>
-      {showDelete && (
-        <ListItemIcon
-          sx={{
-            background: '#d47f97',
-            display: 'flex',
-            justifyContent: 'center',
-            padding: '10px'
-          }}
-        >
-          <IconButton
-            onClick={() => {
-              setChatToDelete(conversation.checksum);
-              setActiveChatId(conversation.checksum);
-            }}
-          >
-            <DeleteForever
-              sx={{
-                textAlign: 'center',
-                color: '#2f2f2f',
-                display: 'flex',
-                justifyContent: 'center',
-                fontSize: '26px'
-              }}
-            />
-          </IconButton>
-        </ListItemIcon>
+      {isActive && !isEdit && (
+        <ActionButtons
+          chatId={conversation.checksum}
+          setChatToDelete={setChatToDelete}
+          setIsEdit={setIsEdit}
+        />
       )}
     </ListItem>
   );
