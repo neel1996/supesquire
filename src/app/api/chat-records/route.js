@@ -14,7 +14,7 @@ export const POST = async (req) => {
 
   const { data, error } = await supabase()
     .from(process.env.NEXT_PUBLIC_SUPABASE_CHAT_RECORDS_TABLE)
-    .select('message, actor, created_at')
+    .select('id, message, actor, created_at')
     .eq('checksum', body.checksum)
     .order('created_at', { ascending: true });
 

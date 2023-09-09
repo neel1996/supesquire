@@ -56,6 +56,7 @@ export default function ChatMessage() {
             ...prev,
             ...data.map((item) => {
               return {
+                id: item.id,
                 user: item.actor,
                 message: item.message,
                 created_at: item.created_at
@@ -163,6 +164,7 @@ export default function ChatMessage() {
         style={style}
         rowPosition={index}
         conversation={conversations[index]}
+        setConversations={setConversations}
       />
     );
   });

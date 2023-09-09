@@ -135,6 +135,11 @@ CREATE POLICY "Enable read access for authenticated users only" ON "public"."cha
 SELECT
     TO authenticated USING (auth.uid() = created_by);
 
+CREATE POLICY "Enable delete for users based on user_id" ON "public"."chat_records"
+AS PERMISSIVE FOR DELETE
+TO authenticated
+USING (auth.uid() = created_by);
+
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."chat_records" AS PERMISSIVE FOR
 INSERT
     TO authenticated WITH CHECK (true);
