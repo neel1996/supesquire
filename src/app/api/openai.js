@@ -5,18 +5,18 @@ import { OpenAIApi } from 'openai';
 
 const chatMemory = new BufferMemory();
 
-export { chatMemory };
-
-export const llm = new ChatOpenAI({
+const llm = new ChatOpenAI({
   openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   modelName: 'gpt-3.5-turbo'
 });
 
-export const openAI = new OpenAIApi({
+const openAI = new OpenAIApi({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY
 });
 
-export const openAIEmbedding = new OpenAIEmbeddings({
+const openAIEmbedding = new OpenAIEmbeddings({
   openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   modelName: 'text-embedding-ada-002'
 });
+
+export { chatMemory, llm, openAI, openAIEmbedding };
