@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 
 import { ListItem, ListItemText, Typography } from '@mui/material';
 
-import HistoryListItem from './HistoryListItem';
 import { ChatContext } from '../../context/Context';
+import HistoryListItem from './HistoryListItem';
 
 export default function ConversationHistory() {
   const { conversationHistory, activeChatId } = useContext(ChatContext);
