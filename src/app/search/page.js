@@ -1,41 +1,72 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-import { Chat } from '@mui/icons-material';
-import { Fab } from '@mui/material';
+import { Chat, LogoutRounded, MenuOpenRounded } from '@mui/icons-material';
+import { SpeedDial, SpeedDialAction } from '@mui/material';
 
+import { supabaseClient } from '../supabaseClient';
 import withAuth from '../withAuth';
 import Search from './Search';
 
 function App() {
+  const router = useRouter();
+
+  const actions = [
+    {
+      icon: <Chat />,
+      name: 'Chat',
+      onclick: () => {
+        router.push('/chat');
+      }
+    },
+    {
+      icon: <LogoutRounded />,
+      name: 'Logout',
+      onclick: () => {
+        supabaseClient.auth.signOut().then(() => {
+          router.push('/login');
+        });
+      }
+    }
+  ];
+
   return (
     <>
       <Search />
-      <Link href="/chat">
-        <Fab
-          color="default"
-          size="large"
-          sx={{
-            position: 'fixed',
-            bottom: '40px',
-            right: '40px',
-            width: '70px',
-            height: '70px',
+      <SpeedDial
+        sx={{
+          position: 'fixed',
+          bottom: '40px',
+          right: '40px',
+          '.MuiSpeedDial-fab': {
             background: '#7793f6',
-            color: '#404251',
             '&:hover': {
-              background: '#868fb2'
+              background: '#ffffff'
             }
-          }}
-        >
-          <Chat
+          }
+        }}
+        direction="up"
+        ariaLabel="SpeedDial menu"
+        icon={
+          <MenuOpenRounded
             sx={{
-              fontSize: '38px'
+              width: '40px',
+              height: '40px',
+              color: '#404251'
             }}
           />
-        </Fab>
-      </Link>
+        }
+      >
+        {actions.map((action) => (
+          <SpeedDialAction
+            key={action.name}
+            icon={action.icon}
+            tooltipTitle={action.name}
+            onClick={action.onclick}
+          />
+        ))}
+      </SpeedDial>
     </>
   );
 }
