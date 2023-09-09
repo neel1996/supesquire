@@ -11,16 +11,21 @@ export default function Logout() {
         display: 'flex',
         justifyContent: 'flex-end',
         width: '100%',
-        bottom: 0,
-        right: 0
+        marginLeft: '-20px',
+        marginBottom: '20px'
       }}
     >
       <Link href="/">
         <IconButton
           size="large"
           sx={{
-            color: '#94a4ff',
-            fontSize: '36px'
+            color: '#1e1f22',
+            fontSize: '36px',
+            backgroundColor: '#94a4ff',
+            '&:hover': {
+              backgroundColor: '#5c73f8',
+              color: '#cccccc'
+            }
           }}
           onClick={() => {
             supabaseClient.auth.signOut();

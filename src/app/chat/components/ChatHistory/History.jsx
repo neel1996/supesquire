@@ -52,7 +52,10 @@ export default function History() {
       sx={{
         backgroundColor: '#1e1f22',
         height: '100vh',
-        boxShadow: '0px 0px 12px 0px rgb(63,81,181,0.17)'
+        boxShadow: '0px 0px 12px 0px rgb(63,81,181,0.17)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end'
       }}
     >
       <Grid container textAlign="center" alignItems="center" padding="10px 0px">
@@ -115,7 +118,8 @@ export default function History() {
       </Grid>
       <List
         sx={{
-          padding: '0px'
+          padding: '0px',
+          height: '100%'
         }}
       >
         {conversationHistory === null ? (
