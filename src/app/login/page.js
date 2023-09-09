@@ -20,6 +20,10 @@ export default function App() {
       authState.current = event;
     }
 
+    if (event === 'SIGNED_OUT') {
+      authState.current = null;
+    }
+
     if (session?.access_token) {
       router.push('/');
     }
