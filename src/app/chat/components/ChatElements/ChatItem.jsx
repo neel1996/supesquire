@@ -117,7 +117,8 @@ export default memo(function ChatItem({
           sx={{
             fontSize: '10px',
             color: '#a8adb2',
-            fontWeight: '500'
+            fontWeight: '500',
+            userSelect: 'none'
           }}
         >
           {formattedTimestamp}
