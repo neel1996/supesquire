@@ -2,6 +2,7 @@
 
 import Head from 'next/head';
 import { useRouter } from 'next/navigation';
+import { useRef } from 'react';
 
 import { supabaseClient } from '@/app/supabaseClient';
 import { Box, Container, Stack, Typography } from '@mui/material';
@@ -10,8 +11,15 @@ import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 export default function App() {
   const router = useRouter();
+  const authState = useRef(null);
 
   supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (authState.current === event) return;
+
+    if (event !== 'INITIAL_SESSION') {
+      authState.current = event;
+    }
+
     if (session?.access_token) {
       router.push('/');
     }
