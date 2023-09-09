@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useContext } from 'react';
 
 import { AddBox, HistoryOutlined, Home } from '@mui/icons-material';
@@ -14,10 +14,9 @@ import {
 
 import { ChatContext } from '../../context/Context';
 import ConversationHistory from './ConversationHistory';
+import Logout from './Logout';
 
 export default function History() {
-  const route = useRouter();
-
   const { conversationHistory, setActiveChatId, setOpenDraw } =
     useContext(ChatContext);
 
@@ -58,18 +57,19 @@ export default function History() {
     >
       <Grid container textAlign="center" alignItems="center" padding="10px 0px">
         <Grid item xs={1}>
-          <IconButton
-            sx={{
-              color: '#94a4ff'
-            }}
-            onClick={() => {
-              setActiveChatId(null);
-              setOpenDraw(false);
-              route.push('/');
-            }}
-          >
-            <Home />
-          </IconButton>
+          <Link href="/search">
+            <IconButton
+              sx={{
+                color: '#94a4ff'
+              }}
+              onClick={() => {
+                setActiveChatId(null);
+                setOpenDraw(false);
+              }}
+            >
+              <Home />
+            </IconButton>
+          </Link>
         </Grid>
         <Grid item xs={9}>
           <Stack
@@ -124,6 +124,7 @@ export default function History() {
           <ConversationHistory />
         )}
       </List>
+      <Logout />
     </Box>
   );
 }
