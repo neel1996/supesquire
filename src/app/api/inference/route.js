@@ -1,85 +1,32 @@
 import { ChatMessageHistory } from 'langchain/memory';
-import { NextResponse } from 'next/server';
+import { v4 as uuid } from 'uuid';
 
 import { chatMemory } from '../openai';
-import { supabase } from '../supabase';
+import { saveChat } from './saveChat';
 import { infer } from './service';
 
 export const POST = async (req) => {
-  const { documentId, message } = await req.json();
+  const { documentId, conversationId, message } = await req.json();
+
   saveChatToBuffer(documentId, message, 'human');
-
-  const channel = supabase().channel(documentId);
-  channel.subscribe((status) => {
-    console.log({ status });
-  });
-
-  const { error } = await saveChat(channel, {
+  saveChat({
+    id: conversationId,
     message,
     checksum: documentId,
     actor: 'human'
+  }).catch((error) => {
+    console.error({ error });
   });
-  if (error) return;
 
-  infer({ documentId, question: message })
-    .then(async ({ answer, context, error }) => {
-      if (error) {
-        emitError(error, documentId);
-      }
+  const stream = new TransformStream();
+  const aiMessageId = uuid().toString();
+  infer({ documentId, question: message, aiMessageId, stream });
 
-      const { error: saveError } = await saveChat(channel, {
-        message: answer,
-        checksum: documentId,
-        actor: 'ai'
-      });
-      if (saveError) return;
-      saveChatToBuffer(documentId, answer, context, 'ai');
+  const res = new Response(await stream.readable);
+  res.headers.set('Content-Type', 'text/event-stream');
+  res.headers.set('ConversationId', aiMessageId);
 
-      channel.send({
-        type: 'broadcast',
-        event: 'ai_message',
-        payload: {
-          message: answer
-        }
-      });
-    })
-    .catch((error) => {
-      emitError(channel, error);
-    });
-
-  return NextResponse.json({});
-};
-
-const emitError = (channel, error) => {
-  channel.send({
-    type: 'broadcast',
-    event: 'chat_error',
-    payload: {
-      error
-    }
-  });
-};
-
-const saveChat = async (channel, chatRecord) => {
-  const { error } = await supabase()
-    .from(process.env.NEXT_PUBLIC_SUPABASE_CHAT_RECORDS_TABLE)
-    .insert({
-      ...chatRecord
-    });
-
-  if (error) {
-    console.error(error);
-    channel.send({
-      type: 'broadcast',
-      event: 'chat_error',
-      payload: {
-        error
-      }
-    });
-    return { error };
-  }
-
-  return { error: null };
+  return res;
 };
 
 function saveChatToBuffer(documentId, message, context, role = 'human') {

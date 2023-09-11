@@ -1,6 +1,7 @@
 import { PromptTemplate } from 'langchain';
 import { LLMChain } from 'langchain/chains';
 
+import { formatChain, qaChain } from '../langchain/chains';
 import { sequentialPipeline } from '../langchain/pipeline';
 import { llm, openAIEmbedding } from '../openai';
 import { supabase } from '../supabase';
@@ -30,7 +31,9 @@ export const search = async (query) => {
 
   const { answer, error: chainError } = await sequentialPipeline({
     content,
-    question: query
+    question: query,
+    chains: [qaChain(), formatChain()],
+    callbacks: []
   });
 
   return {

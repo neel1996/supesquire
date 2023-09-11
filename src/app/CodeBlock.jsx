@@ -3,7 +3,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function CodeBlock({ message }) {
-  if (message?.indexOf('```') === -1) {
+  if (message && message.indexOf('```') === -1) {
     return message.split('\n').map((m, idx) => {
       return (
         <>
