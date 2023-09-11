@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { VariableSizeList as List } from 'react-window';
 
 import LogoCard from '@/app/LogoCard';
+import { useHttpClient } from '@/useHttpClient';
 import { Alert, Grid, Typography } from '@mui/material';
 
 import { ChatContext } from '../../context/Context';
@@ -27,6 +28,8 @@ export default function ChatMessage() {
 
   const listRef = useRef(null);
   const rowHeights = useRef({});
+
+  const { fetch } = useHttpClient();
 
   const { submitHandler } = useChatStream();
 
@@ -72,6 +75,7 @@ export default function ChatMessage() {
           toastId: 'chat_error'
         });
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId]);
 
   useEffect(() => {

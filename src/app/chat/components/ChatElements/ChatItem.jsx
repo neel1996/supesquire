@@ -181,6 +181,7 @@ export default memo(function ChatItem({
               showMenu={showMenu}
               chatId={conversation.id}
               setConversations={setConversations}
+              user={conversation.user}
             />
             <CodeBlock message={conversation.message} />
             {conversation.created_at && (

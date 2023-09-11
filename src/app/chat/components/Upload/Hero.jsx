@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 
 import { supabaseClient } from '@/app/supabaseClient';
+import { useHttpClient } from '@/useHttpClient';
 import { CloudUpload, UploadFileRounded } from '@mui/icons-material';
 import { Box, Grid, Stack, Typography } from '@mui/material';
 
@@ -19,6 +20,7 @@ export default function Hero() {
   const { setActiveChatId, setCurrentDocument } = useContext(ChatContext);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('Uploading document...');
+  const { fetch } = useHttpClient();
 
   const openSocket = useCallback(
     async (id) => {
@@ -118,6 +120,7 @@ export default function Hero() {
         return;
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [openSocket, setActiveChatId, setCurrentDocument]
   );
 

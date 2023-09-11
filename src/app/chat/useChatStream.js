@@ -1,7 +1,11 @@
 import { toast } from 'react-toastify';
 import { v4 as uuid } from 'uuid';
 
+import { useHttpClient } from '@/useHttpClient';
+
 export const useChatStream = () => {
+  const { fetch } = useHttpClient();
+
   const submitHandler = async ({ documentId, message, setConversations }) => {
     if (message?.length === 0) {
       return;
