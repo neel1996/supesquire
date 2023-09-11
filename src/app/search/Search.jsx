@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Dna } from 'react-loader-spinner';
 import { toast } from 'react-toastify';
 
+import { useHttpClient } from '@/useHttpClient';
 import { Grid, Stack, Typography } from '@mui/material';
 
 import ChatInput from '../chat/components/ChatElements/ChatInput';
@@ -10,6 +11,7 @@ import SearchResult from './SearchResult';
 export default function Search() {
   const [searchResult, setSearchResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { fetch } = useHttpClient();
 
   const submitHandler = async (query) => {
     setSearchResult(null);

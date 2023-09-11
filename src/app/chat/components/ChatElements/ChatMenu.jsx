@@ -1,11 +1,13 @@
 import React, { useCallback, useState } from 'react';
 
+import { useHttpClient } from '@/useHttpClient';
 import { ExpandMoreRounded } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Typography } from '@mui/material';
 
-export default function ChatMenu({ showMenu, chatId, setConversations }) {
+export default function ChatMenu({ showMenu, chatId, setConversations, user }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const { fetch } = useHttpClient();
 
   const handleDelete = useCallback(() => {
     fetch(`/api/chat/message?id=${chatId}`, {
@@ -21,6 +23,7 @@ export default function ChatMenu({ showMenu, chatId, setConversations }) {
 
       setAnchorEl(null);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatId, setConversations]);
 
   return (
@@ -31,15 +34,14 @@ export default function ChatMenu({ showMenu, chatId, setConversations }) {
         justifyContent: 'flex-end',
         width: '100%',
         position: 'relative',
-        marginTop: '-15px',
-        marginBottom: '-5px',
         marginLeft: '10px'
       }}
     >
       <IconButton
         sx={{
           width: '30px',
-          height: '30px'
+          height: '30px',
+          position: 'absolute'
         }}
         onClick={(e) => {
           setAnchorEl(e.currentTarget);
@@ -48,7 +50,14 @@ export default function ChatMenu({ showMenu, chatId, setConversations }) {
         {showMenu && (
           <ExpandMoreRounded
             sx={{
-              color: 'white'
+              color: 'white',
+              padding: '5px',
+              background: user === 'ai' ? '#1f232d' : '#4b637d',
+              boxShadow:
+                user === 'ai'
+                  ? '-7px 1px 13px 12px #1f232d'
+                  : '-5px -4px 3px 5px rgb(75, 99, 125, 0.88)',
+              borderRadius: '20px'
             }}
           />
         )}

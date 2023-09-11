@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 
+import { useHttpClient } from '@/useHttpClient';
 import { Cancel, Check } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, TextField } from '@mui/material';
 
@@ -16,6 +17,7 @@ export default function ChatTitleInput({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const { fetch } = useHttpClient();
 
   const submitHandler = async () => {
     if (!chatTitle) return;

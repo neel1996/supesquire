@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+import { useHttpClient } from '@/useHttpClient';
+
 import { ChatContext } from './Context';
 
 export default function ChatProvider({ children }) {
@@ -9,6 +11,8 @@ export default function ChatProvider({ children }) {
   const [currentDocument, setCurrentDocument] = useState(null);
   const [conversationHistory, setConversationHistory] = useState(null);
   const [openDraw, setOpenDraw] = useState(false);
+
+  const { fetch } = useHttpClient();
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -23,6 +27,7 @@ export default function ChatProvider({ children }) {
     };
 
     loadHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeChatId]);
 
   return (

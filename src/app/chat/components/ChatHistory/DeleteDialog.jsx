@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { toast } from 'react-toastify';
 
+import { useHttpClient } from '@/useHttpClient';
 import {
   Button,
   Dialog,
@@ -13,6 +14,7 @@ import { ChatContext } from '../../context/Context';
 
 export default function DeleteDialog({ chatToDelete, setChatToDelete }) {
   const { setActiveChatId } = useContext(ChatContext);
+  const { fetch } = useHttpClient();
 
   return (
     <Dialog
