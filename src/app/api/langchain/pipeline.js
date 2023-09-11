@@ -38,7 +38,7 @@ export const sequentialPipeline = async ({
       'previousAnswer',
       'previousContext'
     ],
-    outputVariables: ['answer', 'text']
+    outputVariables: ['answer']
   });
 
   const { text, aiError } = await pipeline

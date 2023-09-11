@@ -1,4 +1,4 @@
-import { formatChain, qaChain } from '../langchain/chains';
+import { qaChain } from '../langchain/chains';
 import { sequentialPipeline } from '../langchain/pipeline';
 import { saveChat } from './saveChat';
 import { filterSimilarVectors } from './vectorSearch';
@@ -26,7 +26,7 @@ export const infer = async ({
   }
 
   try {
-    const chains = [qaChain(), formatChain()];
+    const chains = [qaChain()];
     let chainSequence = chains.length;
     let aiMessage = '';
     const id = aiMessageId;
