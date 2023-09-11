@@ -10,10 +10,10 @@ import { toast } from 'react-toastify';
 import { VariableSizeList as List } from 'react-window';
 
 import LogoCard from '@/app/LogoCard';
-import { supabaseClient } from '@/app/supabaseClient';
 import { Alert, Grid, Typography } from '@mui/material';
 
 import { ChatContext } from '../../context/Context';
+import { useChatStream } from '../../useChatStream';
 import ChatHeader from './ChatHeader';
 import ChatInput from './ChatInput';
 import ChatItem from './ChatItem';
@@ -28,7 +28,7 @@ export default function ChatMessage() {
   const listRef = useRef(null);
   const rowHeights = useRef({});
 
-  const channel = supabaseClient?.channel(activeChatId);
+  const { submitHandler } = useChatStream();
 
   const scrollToBottom = useCallback(
     () => listRef?.current?.scrollToItem(conversations.length, 'end'),
@@ -82,75 +82,6 @@ export default function ChatMessage() {
     setConversations([]);
     chatRecords();
   }, [activeChatId, chatRecords]);
-
-  const errorEventListener = async (error) => {
-    console.error({ error });
-
-    setConversations((prev) => {
-      let temp = [...prev];
-      const popped = temp.pop();
-      if (popped.loader) {
-        return temp;
-      }
-
-      return prev;
-    });
-
-    toast.error('Cannot get the answer. Please try again later.', {
-      toastId: 'chat_error',
-      position: 'bottom-left'
-    });
-  };
-
-  useEffect(() => {
-    channel
-      .on('broadcast', { event: 'ai_message' }, ({ payload }) => {
-        setConversations((prev) => {
-          let temp = [...prev];
-          temp.pop();
-
-          return [
-            ...temp,
-            {
-              user: 'ai',
-              message: payload?.message,
-              created_at: new Date().toString()
-            }
-          ];
-        });
-      })
-      .on('broadcast', { event: 'chat_error' }, errorEventListener)
-      .subscribe();
-  }, [channel]);
-
-  const submitHandler = async (message) => {
-    if (message?.length === 0) {
-      return;
-    }
-
-    fetch('/api/inference', {
-      method: 'POST',
-      body: JSON.stringify({
-        message,
-        documentId: activeChatId
-      })
-    });
-
-    setConversations((prev) => {
-      return [
-        ...prev,
-        {
-          user: 'human',
-          message,
-          created_at: new Date().toString()
-        },
-        {
-          user: 'ai',
-          loader: true
-        }
-      ];
-    });
-  };
 
   const Item = memo(function Item({ style, index }) {
     const rowRef = useRef({});
@@ -214,7 +145,19 @@ export default function ChatMessage() {
           </List>
         )}
       </Grid>
-      {loading ? <Loader /> : <ChatInput submitHandler={submitHandler} />}
+      {loading ? (
+        <Loader />
+      ) : (
+        <ChatInput
+          submitHandler={(message) => {
+            submitHandler({
+              documentId: activeChatId,
+              message,
+              setConversations
+            });
+          }}
+        />
+      )}
     </Grid>
   );
 }
