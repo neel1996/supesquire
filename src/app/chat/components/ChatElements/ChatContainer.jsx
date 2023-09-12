@@ -1,17 +1,9 @@
-import {
-  memo,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { VariableSizeList as List } from 'react-window';
 
 import LogoCard from '@/app/LogoCard';
 import { useHttpClient } from '@/useHttpClient';
-import { Alert, Grid, Typography } from '@mui/material';
+import { Alert, Grid, List, Typography } from '@mui/material';
 
 import { ChatContext } from '../../context/Context';
 import { useChatStream } from '../../useChatStream';
@@ -24,23 +16,17 @@ export default function ChatMessage() {
   const { activeChatId, currentDocument } = useContext(ChatContext);
 
   const [conversations, setConversations] = useState([]);
+  const [newMessage, setNewMessage] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  const listRef = useRef(null);
-  const rowHeights = useRef({});
+  const scrollRef = useRef(null);
 
   const { fetch } = useHttpClient();
 
   const { submitHandler } = useChatStream();
 
-  const scrollToBottom = useCallback(
-    () => listRef?.current?.scrollToItem(conversations.length, 'end'),
-    [conversations]
-  );
-
-  const getRowHeight = (idx) => {
-    return rowHeights.current[idx] + 30 || 100;
-  };
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [conversations.length]);
 
   const chatRecords = useCallback(async () => {
     setLoading(true);
@@ -79,30 +65,9 @@ export default function ChatMessage() {
   }, [activeChatId]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [conversations.length, scrollToBottom]);
-
-  useEffect(() => {
     setConversations([]);
     chatRecords();
   }, [activeChatId, chatRecords]);
-
-  const Item = memo(function Item({ style, index }) {
-    const rowRef = useRef({});
-
-    return (
-      <ChatItem
-        key={`chat-item-${activeChatId}-${index}`}
-        rowRef={rowRef}
-        rowHeights={rowHeights}
-        listRef={listRef}
-        style={style}
-        rowPosition={index}
-        conversation={conversations[index]}
-        setConversations={setConversations}
-      />
-    );
-  });
 
   return (
     <Grid container flexDirection="column" height="100%">
@@ -134,18 +99,32 @@ export default function ChatMessage() {
         ) : (
           <List
             height={800}
-            itemCount={conversations.length}
-            itemSize={getRowHeight}
-            ref={listRef}
+            ref={scrollRef}
             style={{
               width: '100%',
               height: 'auto',
-              display: 'flex',
               justifyContent: 'flex-end',
-              padding: '20px 0px'
+              padding: '20px 0px',
+              overflow: 'auto'
             }}
           >
-            {({ index, style }) => <Item style={style} index={index} />}
+            {conversations.map((conversation) => {
+              return (
+                <ChatItem
+                  key={conversation.id}
+                  conversation={conversation}
+                  setConversations={setConversations}
+                />
+              );
+            })}
+            {newMessage && (
+              <ChatItem
+                key={newMessage.id}
+                conversation={newMessage}
+                setConversations={setConversations}
+              />
+            )}
+            <ChatItem autoFocus={true} />
           </List>
         )}
       </Grid>
@@ -157,7 +136,8 @@ export default function ChatMessage() {
             submitHandler({
               documentId: activeChatId,
               message,
-              setConversations
+              setConversations,
+              setNewMessage
             });
           }}
         />

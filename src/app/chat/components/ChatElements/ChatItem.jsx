@@ -1,23 +1,29 @@
 import format from 'date-fns/format';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 
 import CodeBlock from '@/app/CodeBlock';
 import { Face6, SmartToy } from '@mui/icons-material';
-import { Box, Card, Grid, Icon, ListItem, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  Grid,
+  Icon,
+  ListItem,
+  ListItemButton,
+  Typography
+} from '@mui/material';
 
 import ChatMenu from './ChatMenu';
 
 export default memo(function ChatItem({
-  rowPosition,
-  style,
   conversation,
   setConversations,
-  listRef,
-  rowRef,
-  rowHeights
+  autoFocus
 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const isMathJaxLoaded = useRef(false);
+  const scrollRef = useRef(null);
 
   let styles = {
     background: '#4b637d',
@@ -27,7 +33,7 @@ export default memo(function ChatItem({
     iconColor: '#92aac3'
   };
 
-  if (conversation.user == 'ai') {
+  if (conversation && conversation.user == 'ai') {
     styles = {
       ...styles,
       background: '#1f232d ',
@@ -39,6 +45,15 @@ export default memo(function ChatItem({
   }
 
   useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [conversation?.message, conversation?.length]);
+
+  useEffect(() => {
+    if (isMathJaxLoaded.current) {
+      return;
+    }
+
+    isMathJaxLoaded.current = true;
     if (typeof window?.MathJax !== 'undefined') {
       window.MathJax = {
         ...window.MathJax,
@@ -61,19 +76,12 @@ export default memo(function ChatItem({
     }
   }, []);
 
-  useEffect(() => {
-    rowHeights.current[rowPosition] = rowRef.current.clientHeight;
-    listRef.current.resetAfterIndex(0);
-  }, [rowRef, rowHeights, listRef, rowPosition]);
-
-  if (conversation.user === 'ai' && conversation.loader) {
+  if (conversation && conversation.user === 'ai' && conversation.loader) {
     return (
       <ListItem
-        key={rowPosition}
         sx={{
           display: 'flex',
-          justifyContent: styles.justifyContent,
-          ...style
+          justifyContent: styles.justifyContent
         }}
       >
         <Box
@@ -128,68 +136,82 @@ export default memo(function ChatItem({
   };
 
   return (
-    <ListItem
-      key={rowPosition}
-      sx={{
-        display: 'flex',
-        justifyContent: styles.justifyContent,
-        ...style
-      }}
-    >
-      <Grid
+    <ListItem>
+      <ListItemButton
+        ref={autoFocus ? null : scrollRef}
+        autoFocus={autoFocus}
+        role={undefined}
+        TouchRippleProps={{
+          sx: {
+            display: 'none'
+          }
+        }}
         sx={{
-          alignItems: 'center',
-          alignContent: 'center',
+          background: 'none',
+          cursor: 'default',
           display: 'flex',
-          width: 'fit-content'
+          justifyContent: styles.justifyContent,
+          '&:hover': {
+            background: 'none'
+          }
         }}
       >
-        <Grid item>
-          <Icon
+        {!autoFocus && (
+          <Grid
             sx={{
-              color: styles.iconColor
+              alignItems: 'center',
+              alignContent: 'center',
+              display: 'flex',
+              width: 'fit-content'
             }}
           >
-            {styles.icon}
-          </Icon>
-        </Grid>
-        <Grid>
-          <Card
-            elevation={5}
-            ref={rowRef}
-            sx={{
-              width: conversation.user === 'ai' ? '90%' : 'fit-content',
-              padding: '10px',
-              background: styles.background,
-              color: styles.color,
-              fontWeight: '500',
-              fontSize: {
-                xl: '14px',
-                xs: '12px'
-              },
-              margin: '5px',
-              userSelect: 'text'
-            }}
-            onMouseEnter={() => {
-              setShowMenu(true);
-            }}
-            onMouseLeave={() => {
-              setShowMenu(false);
-            }}
-          >
-            <ChatMenu
-              showMenu={showMenu}
-              chatId={conversation.id}
-              setConversations={setConversations}
-              user={conversation.user}
-            />
-            <CodeBlock message={conversation.message} />
-            {conversation.created_at && (
-              <TimeStamp conversation={conversation} />
-            )}
-          </Card>
-        </Grid>
-      </Grid>
+            <Grid item>
+              <Icon
+                sx={{
+                  color: styles.iconColor
+                }}
+              >
+                {styles.icon}
+              </Icon>
+            </Grid>
+            <Grid>
+              <Card
+                elevation={5}
+                sx={{
+                  width: conversation.user === 'ai' ? '90%' : 'fit-content',
+                  padding: '10px',
+                  background: styles.background,
+                  color: styles.color,
+                  fontWeight: '500',
+                  fontSize: {
+                    xl: '14px',
+                    xs: '12px'
+                  },
+                  margin: '5px',
+                  userSelect: 'text'
+                }}
+                onMouseEnter={() => {
+                  setShowMenu(true);
+                }}
+                onMouseLeave={() => {
+                  setShowMenu(false);
+                }}
+              >
+                <ChatMenu
+                  showMenu={showMenu}
+                  chatId={conversation.id}
+                  setConversations={setConversations}
+                  user={conversation.user}
+                />
+                <CodeBlock message={conversation.message} />
+                {conversation.created_at && (
+                  <TimeStamp conversation={conversation} />
+                )}
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+      </ListItemButton>
     </ListItem>
   );
 });
