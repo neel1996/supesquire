@@ -6,7 +6,12 @@ import { useHttpClient } from '@/useHttpClient';
 export const useChatStream = () => {
   const { fetch } = useHttpClient();
 
-  const submitHandler = async ({ documentId, message, setConversations }) => {
+  const submitHandler = async ({
+    documentId,
+    message,
+    setConversations,
+    setNewMessage
+  }) => {
     if (message?.length === 0) {
       return;
     }
@@ -41,6 +46,17 @@ export const useChatStream = () => {
       return handleError(res, setConversations);
     }
 
+    setConversations((prev) => {
+      let temp = [...prev];
+      const popped = temp.pop();
+      if (popped?.loader) {
+        return temp;
+      }
+
+      return prev;
+    });
+
+    let aiMessage = '';
     const aiMessageId = res.headers.get('ConversationId');
     const timestamp = new Date().toString();
     const reader = res.body.getReader();
@@ -53,35 +69,39 @@ export const useChatStream = () => {
 
       const message = new TextDecoder('utf-8').decode(value);
       if (message) {
-        setConversations((prev) => {
-          let idx = prev.findIndex((item) => item.id === aiMessageId);
-
-          if (idx === -1) {
-            const temp = prev;
-            prev.pop();
-
-            return [
-              ...temp,
-              {
-                id: aiMessageId,
-                user: 'ai',
-                message,
-                created_at: timestamp
-              }
-            ];
+        aiMessage += message;
+        setNewMessage((prev) => {
+          if (!prev) {
+            return {
+              id: aiMessageId,
+              user: 'ai',
+              message,
+              created_at: timestamp
+            };
           }
 
-          prev.splice(idx, 1, {
+          return {
             id: aiMessageId,
             user: 'ai',
-            message: prev[idx].message + message,
+            message: prev.message + message,
             created_at: timestamp
-          });
-
-          return [...prev];
+          };
         });
       }
     }
+
+    setNewMessage(null);
+    setConversations((prev) => {
+      return [
+        ...prev,
+        {
+          id: aiMessageId,
+          user: 'ai',
+          message: aiMessage,
+          created_at: timestamp
+        }
+      ];
+    });
   };
 
   const handleError = async (error, setConversations) => {
