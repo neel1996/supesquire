@@ -45,6 +45,9 @@ export const sequentialPipeline = async ({
     .call(promptInputs, {
       callbacks
     })
+    .then(({ answer }) => {
+      return { text: answer, aiError: null };
+    })
     .catch((error) => {
       console.error({ error });
       return { aiError: error };
