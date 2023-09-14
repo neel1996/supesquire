@@ -1,19 +1,9 @@
 import Markdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import remarkGfm from 'remark-gfm';
 
 export default function CodeBlock({ message }) {
-  if (message && message.indexOf('```') === -1) {
-    return message.split('\n').map((m, idx) => {
-      return (
-        <>
-          <div key={m + idx}>{m}</div>
-          {idx !== message.split('\n').length - 1 && <br />}
-        </>
-      );
-    });
-  }
-
   return (
     <div
       style={{
@@ -21,8 +11,20 @@ export default function CodeBlock({ message }) {
       }}
     >
       <Markdown
+        remarkPlugins={[remarkGfm]}
         components={{
           code({ inline, ...props }) {
+            if (message && message.indexOf('```') === -1) {
+              return message.split('\n').map((m, idx) => {
+                return (
+                  <div key={m + idx}>
+                    <div>{m}</div>
+                    {idx !== message.split('\n').length - 1 && <br />}
+                  </div>
+                );
+              });
+            }
+
             const match = /language-(\w+)/.exec(props.className || '');
 
             return !inline && match ? (

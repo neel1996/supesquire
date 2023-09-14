@@ -43,3 +43,19 @@ body {
     background-size: 200% 100%;
   }
 }
+
+table {
+  border: 1px solid #4c4c4c;
+  border-collapse: collapse;
+}
+
+th {
+  border: 1px solid #4c4c4c;
+  padding: 10px;
+  font-weight: 900;
+}
+
+td {
+  padding: 10px;
+  border: 1px solid #4c4c4c;
+}
