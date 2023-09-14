@@ -8,7 +8,8 @@ const chatMemory = new BufferMemory();
 const llm = new ChatOpenAI({
   openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
   modelName: 'gpt-3.5-turbo',
-  streaming: true
+  streaming: true,
+  temperature: 0.9
 });
 
 const openAI = new OpenAIApi({
